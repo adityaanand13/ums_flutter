@@ -203,19 +203,19 @@ class _SignupPageState extends State<SignupPage> {
                             else if (EmailValidator.validate(email))
                               displayDialog(context, "Invalid email",
                                   "Invalid email address");
-                            else {
-                              var response = await attemptSignUp(username, password);
-                              var status = response.statusCode;
-                              if (status == 200){
-                                var responseLogin = await attemptLogIn(username, password);
-                                //todo change to Home page
-                                Navigator.of(context).pushNamed('/home');
-                              }
-                              else {
-                                displayDialog(context, "Error",
-                                    response.body);
-                              }
-                            }
+//                            else {
+//                              var response = await attemptSignUp(username, password);
+//                              var status = response.statusCode;
+//                              if (status == 200){
+//                                var responseLogin = await attemptLogIn(username, password);
+//                                todo change to Home page
+//                                Navigator.of(context).pushNamed('/home');
+//                              }
+//                              else {
+//                                displayDialog(context, "Error",
+//                                    response.body);
+//                              }
+//                            }
                           },
                           child: Center(
                             child: Text(

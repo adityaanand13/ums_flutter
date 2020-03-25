@@ -9,12 +9,12 @@ final storage = FlutterSecureStorage();
 class AuthService{
   Future<bool> login(String usernameOrEmail, String password) async {
     var body = {
-      usernameOrEmail: usernameOrEmail,
-      password: "password"
+      "usernameOrEmail": usernameOrEmail,
+      "password": password
     };
     var response = await api(body,"login");
 
-    if (response.statusCode ==200){
+    if (response.statusCode == 200){
       var token = json.decode(response.body).accessToken;
       await storage.write(key: "token", value: token);
       return true;

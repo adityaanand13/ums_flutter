@@ -7,6 +7,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: <Widget>[
                     TextField(
+                      controller: _usernameController,
                       decoration: InputDecoration(
                           labelText: 'USERNAME OR EMAIL',
                           labelStyle: TextStyle(
@@ -56,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 20.0),
                     TextField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                           labelText: 'PASSWORD',
                           labelStyle: TextStyle(
@@ -92,9 +97,9 @@ class _LoginPageState extends State<LoginPage> {
                         child: GestureDetector(
                           onTap: () {
                             //todo refactor
-//                            var username  = _usernameController.text;
-//                            var password  = _passwordController.text;
-                            appAuth.login().then((result) {
+                            var usernameOrEmail  = _usernameController.text;
+                            var password  = _passwordController.text;
+                            appAuth.login(usernameOrEmail, password).then((result) {
                               if (result) {
                                 Navigator.of(context)
                                     .pushReplacementNamed('/home');
