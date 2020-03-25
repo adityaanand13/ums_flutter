@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import '../api/auth.dart';
 import '../main.dart';
@@ -17,6 +18,8 @@ class Item {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  DateTime _selectedDate;
+
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,6 +30,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+
   void displayDialog(context, title, text) =>
       showDialog(
         context: context,
@@ -36,6 +40,20 @@ class _SignupPageState extends State<SignupPage> {
                 content: Text(text)
             ),
       );
+
+  void _datePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2019),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) return null;
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +102,25 @@ class _SignupPageState extends State<SignupPage> {
                           labelText: 'Last Name'
                       ),
                     ),
+                    Container(
+                      height: 70,
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: Text(_selectedDate == null
+                                  ? 'No Date Chosen'
+                                  : 'picked date : ${DateFormat.yMd().format(_selectedDate)}')),
+                          FlatButton(
+                            child: Text(
+                              'Choose Date',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            onPressed: _datePicker,
+                            textColor: Theme.of(context).primaryColor,
+                          )
+                        ],
+                      ),
+                    ),
                     new TextFormField(
                       controller: _dobController,
                       decoration: const InputDecoration(
@@ -126,6 +163,7 @@ class _SignupPageState extends State<SignupPage> {
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
+                          icon: const Icon(Icons.security),
                           labelText: 'PASSWORD',
                           labelStyle: TextStyle(
                               fontFamily: 'Montserrat',
@@ -171,7 +209,7 @@ class _SignupPageState extends State<SignupPage> {
                               if (status == 200){
                                 var responseLogin = await attemptLogIn(username, password);
                                 //todo change to Home page
-                                Navigator.of(context).pushNamed('/LogIn');
+                                Navigator.of(context).pushNamed('/home');
                               }
                               else {
                                 displayDialog(context, "Error",
@@ -205,7 +243,7 @@ class _SignupPageState extends State<SignupPage> {
                             borderRadius: BorderRadius.circular(20.0)),
                         child: InkWell(
                           onTap: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pushNamed('/login');
                           },
                           child:
                           Center(

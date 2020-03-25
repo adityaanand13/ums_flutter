@@ -27,6 +27,7 @@ dependencies:
   http: any
   flutter_secure_storage: any
   email_validator: any
+  intl: any
 
 dev_dependencies:
   flutter_test:

@@ -1,30 +1,15 @@
+import 'package:ums_flutter/main.dart';
 import 'package:flutter/material.dart';
-import './signup.dart';
 
-//void main() => runApp(new MyApp());
-
-class MyApp extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: <String, WidgetBuilder>{
-        '/signup': (BuildContext context) => new SignupPage()
-      },
-      home: new MyHomePage(),
-    );
-  }
+  State<StatefulWidget> createState() => new _LoginPageState();
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         resizeToAvoidBottomPadding: false,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,20 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Colors.green,
                         elevation: 7.0,
                         child: GestureDetector(
-                          onTap: () async {
+                          onTap: () {
+                            //todo refactor
 //                            var username  = _usernameController.text;
 //                            var password  = _passwordController.text;
-//                            var response = await attemptLogIn(username, password);
-//                            var status = response.statusCode;
-//                            if (status == 200){
-                               //todo display success message
-                              //todo change to welcome page
-//                              Navigator.of(context).pushNamed('/LogIn');
-//                            }
-//                            else {
-
-                              //todo display failure  message
-//                            }
+                            appAuth.login().then((result) {
+                              if (result) {
+                                Navigator.of(context)
+                                    .pushReplacementNamed('/home');
+                              } else {
+                                //todo display failure  message
+                              }
+                            });
                           },
                           child: Center(
                             child: Text(
@@ -145,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(width: 5.0),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed('/signup');
+                    Navigator.of(context).pushReplacementNamed('/signup');
                   },
                   child: Text(
                     'Register',
