@@ -166,20 +166,16 @@ class _SignupPageState extends State<SignupPage> {
                               displayDialog(context, "Invalid email",
                                   "Invalid email address");
                             else {
-                              var res = await attemptSignUp(username, password);
-                              if (res == 200)
-                                //todo change to welcome page
+                              var response = await attemptSignUp(username, password);
+                              var status = response.statusCode;
+                              if (status == 200){
+                                var responseLogin = await attemptLogIn(username, password);
+                                //todo change to Home page
                                 Navigator.of(context).pushNamed('/LogIn');
-                              else if (res == 201)
-                                displayDialog(context, "Success",
-                                    "The user was created. Log in now.");
-                              else if (res == 409)
-                                displayDialog(context,
-                                    "That username is already registered",
-                                    "Please try to sign up using another username or log in if you already have an account.");
+                              }
                               else {
                                 displayDialog(context, "Error",
-                                    "An unknown error occurred.");
+                                    response.body);
                               }
                             }
                           },

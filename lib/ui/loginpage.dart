@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     TextField(
                       decoration: InputDecoration(
-                          labelText: 'EMAIL',
+                          labelText: 'USERNAME OR EMAIL',
                           labelStyle: TextStyle(
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.bold,
@@ -105,10 +105,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         color: Colors.green,
                         elevation: 7.0,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () async {
+//                            var username  = _usernameController.text;
+//                            var password  = _passwordController.text;
+//                            var response = await attemptLogIn(username, password);
+//                            var status = response.statusCode;
+//                            if (status == 200){
+                               //todo display success message
+                              //todo change to welcome page
+//                              Navigator.of(context).pushNamed('/LogIn');
+//                            }
+//                            else {
+
+                              //todo display failure  message
+//                            }
+                          },
                           child: Center(
                             child: Text(
-                              'LOGIN',
+                              'SUBMIT',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
