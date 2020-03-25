@@ -1,29 +1,48 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:ums_flutter/api/auth.dart';
+
+final storage = FlutterSecureStorage();
 
 class AuthService{
-  Future<bool> login() async {
-    //todo update with api and storage
-    // Simulate a future for response after 2 second.
-    return await new Future<bool>.delayed(
-        new Duration(
-            seconds: 2
-        ), () => new Random().nextBool()
-    );
+  Future<bool> login(String usernameOrEmail, String password) async {
+    var body = {
+      usernameOrEmail: usernameOrEmail,
+      password: "password"
+    };
+    var response = await api(body,"login");
+
+    if (response.statusCode ==200){
+      var token = json.decode(response.body).accessToken;
+      await storage.write(key: "token", value: token);
+      return true;
+    }
+    else {
+      print(json.decode(response.body).message);
+      return false;
+    }
   }
 
   Future<bool> isLoggedIn() async {
-    return true;
+    var token = await storage.read(key: "token");
+    if (token!=null){
+      var response = await http.get("https://157a7637.ngrok.io/actuator/health",
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          });
+      if (response.statusCode == 200)
+      return true;
+    else
+      return false;
+    }
+    return false;
   }
 
   // Logout
   Future<void> logout() async {
-    //todo update with api and storage
-    // Simulate a future for response after 1 second.
-    return await new Future<void>.delayed(
-        new Duration(
-            seconds: 1
-        )
-    );
+    await storage.delete(key: "token");
   }
 }

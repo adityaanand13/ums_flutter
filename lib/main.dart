@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ums_flutter/screens/home.dart';
 import 'package:ums_flutter/screens/login.dart';
 import 'package:ums_flutter/screens/profile.dart';
@@ -9,14 +8,14 @@ import 'package:ums_flutter/services/auth.service.dart';
 
 
 AuthService appAuth = new AuthService();
-final storage = FlutterSecureStorage();
+
 
 void main() async{
   // Set default home.
   Widget _defaultHome = new LoginPage();
 
-  // Get result of the login function.
-  bool _result = await appAuth.login();
+  // Get result of the is logged in function.
+  bool _result = await appAuth.isLoggedIn();
   if (_result) {
     _defaultHome = new HomePage();
   }
