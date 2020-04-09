@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'dart:convert' show ascii, base64, json, jsonEncode;
+import 'dart:convert' show json;
 
 import 'package:ums_flutter/exception/CustomException.dart';
 
@@ -22,14 +22,15 @@ class AuthApiProvider{
     }
     return responseJson;
   }
-  
+
+  //todo refactor to common response
   Future<bool> get(String route, String token) async{
     var headers = {
       "Content-Type": "application/json",
       "Authorization": 'Bearer $token'
     };
     try{
-      final response = await http.get("$_BASE_URI/$route", headers: headers);
+      final response = await http.get("$_BASE_URI$route", headers: headers);
       return response.statusCode == 200;
     }on SocketException {
       throw FetchDataException('No Internet connection');
@@ -37,6 +38,7 @@ class AuthApiProvider{
     return false;
   }
 
+  //todo move to separate class
   dynamic _response(http.Response response) {
     switch (response.statusCode) {
       case 200:
