@@ -2,12 +2,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/user_bloc.dart';
+import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
-import 'menu_item.dart';
+import 'menu_generator/menu_generator.dart';
 
 class SideBar extends StatefulWidget {
+  final UserService userService;
+
+  SideBar({Key key, @required this.userService})
+      : assert(userService != null),
+        super(key: key);
+
   @override
   _SideBarState createState() => _SideBarState();
 }
@@ -64,7 +71,7 @@ class _SideBarState extends State<SideBar>
           top: 0,
           bottom: 0,
           left: isSideBarOpenedAsync.data ? 0 : -SizeConfig.screenWidth,
-          right: isSideBarOpenedAsync.data ? 0 : SizeConfig.screenWidth - 45,
+          right: isSideBarOpenedAsync.data ? 0 : SizeConfig.screenWidth - 33,
           child: Row(
             children: <Widget>[
               Expanded(
@@ -74,94 +81,14 @@ class _SideBarState extends State<SideBar>
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Colors.blue, Colors.red])),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: SizeConfig.blockSizeVertical * 10,
-                      ),
-                      ListTile(
-                        title: Text(
-                          "User Name",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: SizeConfig.blockSizeHorizontal * 3.8,
-                              fontWeight: FontWeight.w800),
-                        ),
-                        subtitle: Text(
-                          "Full Name",
-                          style: TextStyle(
-                            color: Color(0xFF1BB5FD),
-                            fontSize: SizeConfig.blockSizeHorizontal * 3.8,
-                          ),
-                        ),
-                        leading: CircleAvatar(
-                          child: Icon(
-                            Icons.perm_identity,
-                            color: Colors.white,
-                          ),
-                          radius: 40,
-                        ),
-                      ),
-                      Divider(
-                        height: SizeConfig.blockSizeVertical * 2.5,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.3),
-                        indent: 32,
-                        endIndent: 32,
-                      ),
-                      MenuItem(
-                        icon: Icons.home,
-                        title: "Home",
-                        onTap: () {
-                          onIconPressed();
-                          BlocProvider.of<NavigationBloc>(context)
-                              .add(NavigationEvents.HomePageClickedEvent);
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.person,
-                        title: "My Account",
-                        onTap: () {
-                          onIconPressed();
-                          BlocProvider.of<NavigationBloc>(context)
-                              .add(NavigationEvents.MyAccountClickedEvent);
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.shopping_basket,
-                        title: "My Orders",
-                        onTap: () {
-                          onIconPressed();
-                          BlocProvider.of<NavigationBloc>(context)
-                              .add(NavigationEvents.MyOrdersClickedEvent);
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.card_giftcard,
-                        title: "Wishlist",
-                      ),
-                      Divider(
-                        height: SizeConfig.blockSizeVertical * 2.5,
-                        thickness: 0.5,
-                        color: Colors.white.withOpacity(0.3),
-                        indent: 32,
-                        endIndent: 32,
-                      ),
-                      MenuItem(
-                        icon: Icons.settings,
-                        title: "Settings",
-                      ),
-                      MenuItem(
-                        icon: Icons.exit_to_app,
-                        title: "Logout",
-                      ),
-                    ],
-                  ),
-                ),
+                          colors: [Colors.black12.withOpacity(0.8), Colors.black54.withOpacity(0.85)])),
+                  child:  MenuGenerator(
+                        userService: widget.userService,
+                        onIconPressed: onIconPressed,
+                      )),
               ),
               Align(
-                alignment: Alignment(0, 0.8),
+                alignment: Alignment(0, 0.96),
                 child: GestureDetector(
                   onTap: () {
                     onIconPressed();
@@ -173,10 +100,12 @@ class _SideBarState extends State<SideBar>
                       height: SizeConfig.blockSizeVertical * 9.5,
                       decoration: BoxDecoration(
                           backgroundBlendMode: BlendMode.multiply,
+                          color: Colors.black54.withOpacity(0.85),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [Colors.redAccent, Colors.red])),
+                              colors: [Colors.redAccent, Colors.red])
+                              ),
                       alignment: Alignment.centerLeft,
                       child: AnimatedIcon(
                         progress: _animationController.view,
@@ -207,7 +136,7 @@ class CustomMenuClipper extends CustomClipper<Path> {
 
     Path path = Path();
     path.moveTo(0, 0);
-    path.quadraticBezierTo(0, 8, 10, 16);
+    path.quadraticBezierTo(0, 10, 12, 16);
     path.quadraticBezierTo(width - 1, height / 2 - 20, width, height / 2);
     path.quadraticBezierTo(width + 1, height / 2 + 20, 10, height - 16);
     path.quadraticBezierTo(0, height - 8, 0, height);
