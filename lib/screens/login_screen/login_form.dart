@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/login_bloc.dart';
 import 'package:ums_flutter/event_state/login/login_event.dart';
@@ -14,6 +15,8 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _usernameOrEmailController =
   TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _usernameOrEmailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +46,11 @@ class _LoginFormState extends State<LoginForm> {
             TextFormField(
               controller: _usernameOrEmailController,
               keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              focusNode: _usernameOrEmailFocus,
+              onFieldSubmitted: (term){
+                _fieldFocusChange(context, _usernameOrEmailFocus, _passwordFocus);
+              },
               decoration: InputDecoration(
                   labelText: 'USERNAME OR EMAIL',
                   labelStyle: TextStyle(
@@ -56,6 +64,12 @@ class _LoginFormState extends State<LoginForm> {
             SizedBox(height: SizeConfig.blockSizeVertical * 2.5),
             TextFormField(
               controller: _passwordController,
+              textInputAction: TextInputAction.done,
+              focusNode: _passwordFocus,
+              onFieldSubmitted: (value){
+                _passwordFocus.unfocus();
+                _onLoginButtonPressed();
+              },
               decoration: InputDecoration(
                   labelText: 'PASSWORD',
                   labelStyle: TextStyle(
@@ -115,5 +129,10 @@ class _LoginFormState extends State<LoginForm> {
         ),
       );
     }));
+  }
+
+  _fieldFocusChange(BuildContext context, FocusNode currentFocus,FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 }

@@ -2,28 +2,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/bloc/login_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:ums_flutter/bloc/navigation_bloc.dart';
 import 'package:ums_flutter/services/auth_service.dart';
+import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
-import 'widgets/login_form.dart';
+import 'login_form.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatelessWidget with NavigationStates{
   final AuthService authService;
+  final UserService userService;
 
-  LoginScreen({Key key, @required this.authService})
+  LoginScreen({Key key, @required this.authService, @required this.userService})
       : assert(authService != null),
+        assert(userService != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-        body: BlocProvider(
+        body: BlocProvider<LoginBloc>(
             create: (context) {
               return LoginBloc(
-                authenticationBloc: BlocProvider.of<AuthenticationBloc>(
-                    context),
+                authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
                 authService: authService,
+                userService: userService,
               );
             },
             child: SingleChildScrollView(
