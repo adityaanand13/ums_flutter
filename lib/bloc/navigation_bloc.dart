@@ -1,19 +1,36 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:ums_flutter/bloc/authentication_bloc.dart';
+import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
+import 'package:ums_flutter/screens/Profile_screen/my_accounts_screen.dart';
 import 'package:ums_flutter/screens/home.dart';
-import 'package:ums_flutter/screens/my_accounts_screen.dart';
+import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/my_orders_screen.dart';
+import 'package:ums_flutter/services/auth_service.dart';
+import 'package:ums_flutter/services/user_service.dart';
 
 enum NavigationEvents {
   HomePageClickedEvent,
   MyAccountClickedEvent,
   MyOrdersClickedEvent,
+  LogoutClickedEvent,
 }
 
 abstract class NavigationStates {}
 
 class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
+  final AuthenticationBloc authenticationBloc;
+  final UserService userService;
+  final AuthService authService;
+
+  NavigationBloc({
+    @required this.authenticationBloc,
+    @required this.userService,
+    @required this.authService,
+  }) : assert(authenticationBloc != null);
+
   @override
-  NavigationStates get initialState => MyAccountsScreen();
+  NavigationStates get initialState => MyAccountsScreen(userService: userService,);
 
   @override
   Stream<NavigationStates> mapEventToState(NavigationEvents event) async* {
@@ -22,10 +39,14 @@ class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
         yield HomeScreen();
         break;
       case NavigationEvents.MyAccountClickedEvent:
-        yield MyAccountsScreen();
+        yield MyAccountsScreen(userService: userService,);
         break;
       case NavigationEvents.MyOrdersClickedEvent:
         yield MyOrdersScreen();
+        break;
+      case NavigationEvents.LogoutClickedEvent:
+        authenticationBloc.add(LoggedOut());
+        yield LoginScreen(userService: userService,authService: authService,);
         break;
     }
   }
