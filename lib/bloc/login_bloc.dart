@@ -36,8 +36,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           password: event.password,
         );
         userService.deleteUser();
-        authenticationBloc.add(LoggedIn(token: token.accessToken));
         userService.persistUser(await userService.fetchUser());
+        authenticationBloc.add(LoggedIn(token: token.accessToken));
         yield LoginInitial();
       } catch (error) {
         yield LoginFailure(error: error.toString());
