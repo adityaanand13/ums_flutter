@@ -13,6 +13,12 @@ class UserPresent extends UserState{
   final UserModel userModel;
 
   const UserPresent({@required this.userModel});
+
+  @override
+  List<Object> get props => [userModel];
+
+  @override
+  String toString() => 'User ${userModel.id} \n{ username: ${userModel.username} }\n{usertype: ${userModel.userType}';
 }
 
 class UserAbsent extends UserState{}
