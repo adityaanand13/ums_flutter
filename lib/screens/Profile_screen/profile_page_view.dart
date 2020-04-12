@@ -58,19 +58,18 @@ class _ProfilePageViewState extends State<ProfilePageView>
             Colors.black.withOpacity(1),
             Colors.black.withOpacity(0.6),
             Colors.black.withOpacity(0.4),
-            Colors.white.withOpacity(0),
+            Colors.transparent,
           ], stops: [
             0.1,
-            0.2,
             0.25,
+            0.3,
             1
           ], begin: Alignment.bottomCenter, end: Alignment.topCenter),
         ),
       ),
       Positioned(
-        bottom: 105,
-        left: 20,
-        right: 20,
+        bottom: 95,
+        right: 25,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[

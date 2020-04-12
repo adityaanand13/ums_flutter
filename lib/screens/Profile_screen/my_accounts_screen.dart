@@ -11,6 +11,7 @@ import 'package:ums_flutter/utils/sizeConfig.dart';
 import 'profile_page_view.dart';
 
 class MyAccountsScreen extends StatefulWidget with NavigationStates {
+  //todo check for unused variable
   final UserService userService;
 
   const MyAccountsScreen({Key key, this.userService})
@@ -78,7 +79,6 @@ class _MyAccountsScreenState extends State<MyAccountsScreen>
   getWidget() {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
-        print(state);
         if (state is UserPresent) {
           return Stack(fit: StackFit.expand, children: <Widget>[
             FractionallySizedBox(
@@ -113,7 +113,7 @@ class _MyAccountsScreenState extends State<MyAccountsScreen>
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black,
+                              color: Colors.grey,
                               offset: Offset(1.0, 0.0),
                               blurRadius: 10.0)
                         ],
@@ -168,7 +168,8 @@ class _MyAccountsScreenState extends State<MyAccountsScreen>
               ),
             )
           ]);
-        } else if (state is UserAbsent) {
+        }
+        else if (state is UserAbsent) {
           BlocProvider.of<UserBloc>(context).add(GetUser());
           return Center(
             child: CircularProgressIndicator(),
