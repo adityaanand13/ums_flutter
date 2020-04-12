@@ -22,7 +22,6 @@ class MenuGenerator extends StatelessWidget {
         super(key: key);
 
   @override
-  //todo refactor conditions
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return BlocBuilder<UserBloc, UserState>(builder: (context, state) {
@@ -85,18 +84,23 @@ class MenuGenerator extends StatelessWidget {
             ),
           ],
         );
-      } else if (state is UserAbsent) {
+      } 
+      else if (state is UserAbsent) {
         BlocProvider.of<UserBloc>(context).add(GetUser());
         return Center(
           child: CircularProgressIndicator(),
         );
-      } else if (state is UserLoading) {
+      } 
+      else if (state is UserLoading) {
         return Center(
           child: CircularProgressIndicator(),
         );
-      } else if (state is UserError) {
+      } 
+      else if (state is UserError) {
         return Center(child: Text('${state.error}'));
-      } else {
+      }
+      //todo refactor default case
+      else {
         print("Null part");
         return Column(
           children: <Widget>[

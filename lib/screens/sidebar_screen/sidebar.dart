@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:ums_flutter/bloc/user_bloc.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
