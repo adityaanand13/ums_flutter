@@ -7,7 +7,7 @@ import 'package:ums_flutter/exception/CustomException.dart';
 
 class AuthApiProvider{
 
-  static const _BASE_URI = "http://localhost:8080/api/auth";
+  static const _BASE_URI = "https://ac9ff63d.ngrok.io/api/auth";
   static const _headers = {"Content-Type": "application/json"};
 
 //api

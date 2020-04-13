@@ -15,15 +15,13 @@ class AppStarted extends AuthenticationEvent {
 }
 
 class LoggedIn extends AuthenticationEvent {
-  final String token;
 
-  LoggedIn({@required this.token}) : super([token]);
 
   @override
-  String toString() => 'LoggedIn { token: $token }';
+  String toString() => 'LoggedIn';
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => [];
 }
 
 class LoggedOut extends AuthenticationEvent {
@@ -32,5 +30,5 @@ class LoggedOut extends AuthenticationEvent {
 
   @override
   // TODO: implement props
-  List<Object> get props => throw UnimplementedError();
+  List<Object> get props => [];
 }

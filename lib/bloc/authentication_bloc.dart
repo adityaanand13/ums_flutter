@@ -34,8 +34,6 @@ class AuthenticationBloc
     }
 
     if (event is LoggedIn) {
-      yield AuthenticationLoading();
-      await authService.persistToken(event.token);
       yield AuthenticationAuthenticated();
     }
 
