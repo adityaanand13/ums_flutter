@@ -36,6 +36,7 @@ class _LoginFormState extends State<LoginForm> {
           SnackBar(
             content: Text('${state.error}'),
             backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
           ),
         );
       }
@@ -45,6 +46,9 @@ class _LoginFormState extends State<LoginForm> {
           children: <Widget>[
             TextFormField(
               controller: _usernameOrEmailController,
+              style: TextStyle(
+                color: Colors.grey,
+              ),
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
               focusNode: _usernameOrEmailFocus,
@@ -65,6 +69,9 @@ class _LoginFormState extends State<LoginForm> {
             TextFormField(
               controller: _passwordController,
               textInputAction: TextInputAction.done,
+              style: TextStyle(
+                color: Colors.grey,
+              ),
               focusNode: _passwordFocus,
               onFieldSubmitted: (value){
                 _passwordFocus.unfocus();

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
+import 'api/college_api.dart';
 import 'app.dart';
+import 'package:http/http.dart' as http;
+
+import 'models/response/college_response.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -37,6 +42,7 @@ void main(){
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final authService = AuthService();
   final userService = UserService();
+//  printData();
   runApp(
       BlocProvider<AuthenticationBloc>(
           create: (context) {
@@ -48,20 +54,30 @@ void main(){
   );
 }
 
+
 //Future<void> printData () async {
 //  FlutterSecureStorage storage = FlutterSecureStorage();
-//  UserApiProvider provider = UserApiProvider();
+//  CollegeApiProvider provider = CollegeApiProvider();
 //  String token = await storage.read(key: "token");
-//  var userJson = await provider.getUser("", token);
-//  var headers = {
-//    "Content-Type": "application/json",
-//    "Authorization": 'Bearer $token'
-//  };
+//  //gets json
+//  var collegesJson = await provider.get("", token);
+//  //var headers = {
+//  // c"Content-Type": "application/json",
+//  //  "Authorization": 'Bearer $token'
+//  //};
+////  print(collegesJson);
+////  collegesJson.forEach((college) => print(college));
+////  print("\n");
+////  print(collegesJson.runtimeType);
+////  print(collegesJson[0].runtimeType);
+//  List<CollegeResponse> colleges =  List<CollegeResponse>();
+//  collegesJson.forEach((college) => colleges.add(CollegeResponse.fromJsonMap(college)));
+//  print(colleges.length);
 //
 //
-//  var response = await http.get("http://localhost:8080/api/user/", headers: headers);
-//  print(token);
-//  var user = UserModel.fromJsonMap(json.decode(response.body)['data']);
-//  print(user.username);
-//  print(json.decode(response.body));
+// //var response = await http.get("http://localhost:8080/api/user/", headers: headers);
+//  //print(token);
+//  //var user = coll.fromJsonMap(json.decode(response.body)['data']);
+//  //print(user.username);
+//  //print(json.decode(response.body));
 //}

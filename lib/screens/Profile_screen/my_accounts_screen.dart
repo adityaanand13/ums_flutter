@@ -4,7 +4,6 @@ import 'package:ums_flutter/bloc/navigation_bloc.dart';
 import 'package:ums_flutter/bloc/user_bloc.dart';
 import 'package:ums_flutter/event_state/user/user_event.dart';
 import 'package:ums_flutter/event_state/user/user_state.dart';
-import 'package:ums_flutter/models/user_model.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 

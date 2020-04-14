@@ -9,10 +9,10 @@ import 'dart:convert' show json;
 
 import 'package:ums_flutter/exception/CustomException.dart';
 
-class UserApiProvider{
-  static const _BASE_URL = "https://ac9ff63d.ngrok.io/api/user";
+class CollegeApiProvider{
+  static const _BASE_URL = "https://ac9ff63d.ngrok.io/api/college";
 
-  Future<dynamic>  getUser(String route, String token) async{
+  Future<dynamic>  get(String route, String token) async{
     var responseJson;
     var headers = {
       "Content-Type": "application/json",
@@ -60,6 +60,7 @@ class UserApiProvider{
   }
 
   //todo move to separate class
+  //returns json
   dynamic _response(http.Response response) {
     switch (response.statusCode) {
       case 200:
@@ -79,4 +80,6 @@ class UserApiProvider{
             'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
+
+  delete(String s, String token) {}
 }

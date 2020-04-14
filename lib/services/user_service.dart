@@ -1,6 +1,5 @@
 
 import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ums_flutter/api/user_api.dart';
 import 'package:ums_flutter/models/user_model.dart';
