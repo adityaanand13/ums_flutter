@@ -9,6 +9,7 @@ import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
+import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
 class HomeScreen extends StatelessWidget with NavigationStates {
@@ -24,14 +25,31 @@ class HomeScreen extends StatelessWidget with NavigationStates {
       //change event to create college
       //if state is edit then display tick green
       //chnage event to create college
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: null,
+      floatingActionButton: BlocBuilder<CollegeBloc, CollegeState>(
+        builder: (context, state) {
+          if (state is CollegeAbsent) {
+            return FloatingActionButton(
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: null,
+            );
+          } else {
+            return Container(
+              width: 0.0,
+              height: 0.0,
+            );
+          }
+        },
       ),
-      body:  Stack(
-        children: <Widget>[SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
                   height: SizeConfig.blockSizeVertical * 45,
@@ -128,11 +146,13 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                         BlocProvider.of<CollegesBloc>(context)
                             .add(GetCollegeS());
                         return Center(
-                          child: Text("hello"),
-                        );
+                            child: Container(
+                          width: 0.0,
+                          height: 0.0,
+                        ));
                       } else if (state is CollegesLoading) {
                         return Center(
-                          child: Text("hello"),
+                          child: LinearProgressIndicator(),
                         );
                       } else {
                         return Center(child: CircularProgressIndicator());
@@ -144,43 +164,48 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                   height: SizeConfig.blockSizeVertical * 8,
                 ),
               ],
-            ),),
-            BlocListener<CollegeBloc, CollegeState>(
-              listener: (context, state) {
-                if (state is CollegeError) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${state.error}',
+            ),
+          ),
+          BlocListener<CollegeBloc, CollegeState>(
+            listener: (context, state) {
+              if (state is CollegeError) {
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${state.error}',
                       style: TextStyle(
                         color: Colors.green,
-                      ),),
-                      backgroundColor: Colors.red,
-                      duration: Duration(seconds: 3),
+                      ),
                     ),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+            child: BlocBuilder<CollegeBloc, CollegeState>(
+              builder: (context, state) {
+                if (state is CollegePresent) {
+                  return CollegeView(collegeResponse: state.collegeResponse);
+                } else if (state is CollegeAbsent) {
+                  return Container(child: SizedBox.shrink());
+                } else if (state is CollegeLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is EditCollege) {
+                  return Center(child: Text("Error aaya bhai"));
+                }else {
+                  return Container(
+                    width: 0.0,
+                    height: 0.0,
                   );
                 }
               },
-              child: BlocBuilder<CollegeBloc, CollegeState>(
-                // ignore: missing_return, missing_return
-                builder: (context, state) {
-                  if (state is CollegePresent) {
-                    print("Kahe pareshan ho rahe ho");
-                    return showCollege(context, state.collegeResponse);
-                  } else if (state is CollegeAbsent) {
-                    return Container(
-                        child: SizedBox.shrink()
-                    );
-                  } else if (state is CollegeLoading) {
-                    return Center(child: Text("Load nhi lena bhai"));
-                  } else if (state is EditCollege) {
-                    return Center(child: Text("Error aaya bhai"));
-                  }
-                },
-              ),
             ),
-          ],
-        ),
-
+          ),
+        ],
+      ),
     );
   }
 
@@ -198,18 +223,23 @@ class HomeScreen extends StatelessWidget with NavigationStates {
               ListTile(
                 contentPadding: EdgeInsets.all(5),
                 title: Text(
-                  'MMICT&BM',
+                  '${college.code}',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: SizeConfig.blockSizeHorizontal * 4,
                       fontWeight: FontWeight.w800),
                 ),
-                subtitle: Text(
-                  'M.M Institute Of Computer technology & Bussiness Management',
-                  style: TextStyle(
-                    color: Color(0xFF1BB5FD),
-                    fontSize: SizeConfig.blockSizeHorizontal * 3.8,
-                  ),
+                //todo wrap to limited size
+                subtitle: Wrap(
+                  children: <Widget>[
+                    Text(
+                      '${college.name}',
+                      style: TextStyle(
+                        color: Color(0xFF1BB5FD),
+                        fontSize: SizeConfig.blockSizeHorizontal * 3.8,
+                      ),
+                    ),
+                  ],
                 ),
                 leading: CircleAvatar(
                   child: Icon(
@@ -233,111 +263,6 @@ class HomeScreen extends StatelessWidget with NavigationStates {
     }
     return list;
   }
-}
-
-Widget showCollege(context, CollegeResponse collegeResponse) {
-  //todo add back button in container above row row mainAxisAlgnment.
-  //todo add extra 3 outline buttons at bottom
-  return Container(
-        //todo refactor with sizeConfig
-        height: SizeConfig.blockSizeVertical * 10,
-        width: SizeConfig.blockSizeHorizontal * 8,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-        child: Column(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(height: 150.0),
-                Container(
-                  height: 100.0,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10.0),
-                        topRight: Radius.circular(10.0),
-                      ),
-                      color: Colors.teal),
-                ),
-              ],
-            ),
-            SizedBox(height: 20.0),
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  collegeResponse.name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Quicksand',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w300,
-                  ),
-                )),
-            SizedBox(height: 20.0),
-            Padding(
-                padding: EdgeInsets.only(left: 1.0),
-                child: Text(
-                  collegeResponse.description,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Quicksand',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w300,
-                  ),
-                )),
-            SizedBox(height: 8.0),
-            Padding(
-                padding: EdgeInsets.only(top: 10.0),
-                child: Text(
-                  collegeResponse.code,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Quicksand',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w300,
-                  ),
-                )),
-            SizedBox(height: 8.0),
-            Padding(
-                padding: EdgeInsets.only(top: 10.0),
-                child: Text(
-                  collegeResponse.address,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'Quicksand',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w300,
-                  ),
-                )),
-            SizedBox(height: 15.0),
-            FloatingActionButton(
-                tooltip: "Edit College",
-                backgroundColor: Colors.blue,
-                child: new ListTile(
-                  title: new Icon(
-                    Icons.edit,
-                  ),
-                ),
-                onPressed: () {
-//                          Navigator.of(context).pushReplacementNamed('/signup');
-                }),
-
-//                    FlatButton(
-//                        child: Center(
-//                          child: Text(
-//                            'OKAY',
-//                            style: TextStyle(
-//                                fontFamily: 'Montserrat',
-//                                fontSize: 14.0,
-//                                color: Colors.teal),
-//                          ),
-//                        ),
-//                        onPressed: () {
-//                          Navigator.of(context).pop();
-//                        },
-//                        color: Colors.transparent
-//                    )
-          ],
-        ),
-      );
 }
 
 //todo create a college display
