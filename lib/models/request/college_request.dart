@@ -6,7 +6,13 @@ class CollegeRequest {
   String code;
   String address;
 
-	CollegeRequest.fromJsonMap(Map<String, dynamic> map):
+
+	CollegeRequest({this.id, this.name, this.description, this.code, this.address});
+
+
+	CollegeRequest.create({this.name, this.description, this.code, this.address});
+
+  CollegeRequest.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
 		name = map["name"],
 		description = map["description"],

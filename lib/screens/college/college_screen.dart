@@ -9,6 +9,7 @@ import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
+import 'package:ums_flutter/screens/college/add_college_View.dart';
 import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
@@ -33,7 +34,13 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                 Icons.add,
                 color: Colors.white,
               ),
-              onPressed: null,
+              onPressed: () {
+                BlocProvider.of<CollegeBloc>(context).add(CreateCollege());
+                return Container(
+                  width: 0.0,
+                  height: 0.0,
+                );
+              },
             );
           } else {
             return Container(
@@ -76,10 +83,7 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                       Positioned(
                         bottom: SizeConfig.blockSizeVertical * 2,
                         left: 12,
-                        child:
-                            //todo add a blockBuilder
-                            //if ( state is EditCollege || Display College)
-                            Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
@@ -188,14 +192,19 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                 if (state is CollegePresent) {
                   return CollegeView(collegeResponse: state.collegeResponse);
                 } else if (state is CollegeAbsent) {
-                  return Container(child: SizedBox.shrink());
+                  return Container(
+                    height: 0,
+                    width: 0,
+                  );
                 } else if (state is CollegeLoading) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
                 } else if (state is EditCollege) {
                   return Center(child: Text("Error aaya bhai"));
-                }else {
+                } else if (state is AddCollege) {
+                  return AddCollegeView();
+                } else {
                   return Container(
                     width: 0.0,
                     height: 0.0,
@@ -264,9 +273,3 @@ class HomeScreen extends StatelessWidget with NavigationStates {
     return list;
   }
 }
-
-//todo create a college display
-
-//todo create a college edit
-
-//todo create a delete confirmation

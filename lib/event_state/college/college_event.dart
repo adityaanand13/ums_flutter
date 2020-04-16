@@ -37,14 +37,16 @@ class UpdateCollege extends CollegeEvent {
 
 }
 
-class CreateCollege extends CollegeEvent {
+class CreateCollege extends CollegeEvent {}
+
+class CreateCollegeButtonPressed extends CollegeEvent {
   final CollegeRequest collegeRequest;
 
-  CreateCollege({@required this.collegeRequest});
+  CreateCollegeButtonPressed({@required this.collegeRequest});
 
   @override
   String toString () {
-    return 'CreateCollege{collegeRequest: $collegeRequest}';
+    return 'CreateCollegeButtonPressed{collegeRequest: $collegeRequest}';
   }
 
 }

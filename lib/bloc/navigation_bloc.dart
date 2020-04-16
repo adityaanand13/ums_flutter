@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
 import 'package:ums_flutter/screens/Profile_screen/my_accounts_screen.dart';
+import 'package:ums_flutter/screens/college/add_college_View.dart';
 import '../screens/college/college_screen.dart';
 import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/my_orders_screen.dart';
@@ -14,6 +15,7 @@ enum NavigationEvents {
   MyAccountClickedEvent,
   MyOrdersClickedEvent,
   LogoutClickedEvent,
+  AddCollegeView
 }
 
 abstract class NavigationStates {}
@@ -36,13 +38,16 @@ class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
   Stream<NavigationStates> mapEventToState(NavigationEvents event) async* {
     switch (event) {
       case NavigationEvents.HomePageClickedEvent:
-        yield HomeScreen();
+        yield AddCollegeView();
         break;
       case NavigationEvents.MyAccountClickedEvent:
         yield MyAccountsScreen(userService: userService,);
         break;
       case NavigationEvents.MyOrdersClickedEvent:
         yield MyOrdersScreen();
+        break;
+      case  NavigationEvents.AddCollegeView:
+        yield AddCollegeView();
         break;
       case NavigationEvents.LogoutClickedEvent:
         authenticationBloc.add(LoggedOut());

@@ -197,7 +197,7 @@ class CollegeView extends StatelessWidget {
                         ),
                         child: Text(
                           'Add Course',
-                          style: TextStyle(color: Colors.amberAccent),
+                          style: TextStyle(color: Colors.amberAccent,),
                         ),
                       ),
                       OutlineButton(
@@ -209,7 +209,7 @@ class CollegeView extends StatelessWidget {
                         ),
                         child: Text(
                           'Modify',
-                          style: TextStyle(color: Colors.lightGreenAccent),
+                          style: TextStyle(color: Colors.lightGreenAccent,),
                         ),
                       ),
                       RaisedButton(
@@ -218,7 +218,7 @@ class CollegeView extends StatelessWidget {
                         color: Colors.blueAccent,
                         child: Text(
                           'Back',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white,),
                         ),
                       )
                     ],

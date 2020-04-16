@@ -42,6 +42,8 @@ class EditCollege extends CollegeState{
 
 }
 
+class AddCollege extends CollegeState{}
+
 class CollegeError extends CollegeState {
   final String error;
 
