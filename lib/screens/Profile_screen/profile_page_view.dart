@@ -68,7 +68,7 @@ class _ProfilePageViewState extends State<ProfilePageView>
         ),
       ),
       Positioned(
-        bottom: 95,
+        bottom: SizeConfig.blockSizeVertical*12,
         right: 25,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -78,15 +78,14 @@ class _ProfilePageViewState extends State<ProfilePageView>
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  widget.userModel.username,
+                  '${widget.userModel.username}',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: SizeConfig.blockSizeHorizontal * 6.5,
                   ),
                 ),
-                Text(
-                  widget.userModel.userType == "STUDENT" ? "college" : widget.userModel.userType,
+                Text('${widget.userModel.userType}',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w200,
