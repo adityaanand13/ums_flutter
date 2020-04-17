@@ -10,7 +10,7 @@ import 'dart:convert' show json;
 import 'package:ums_flutter/exception/CustomException.dart';
 
 class UserApiProvider{
-  static const _BASE_URL = "https://47430bc5.ngrok.io/api/user";
+  static const _BASE_URL = "https://60082201.ngrok.io/api/user";
 
   Future<dynamic>  getUser(String route, String token) async{
     var responseJson;

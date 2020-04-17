@@ -203,7 +203,10 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                 } else if (state is EditCollege) {
                   return Center(child: Text("Error aaya bhai"));
                 } else if (state is AddCollege) {
-                  return AddCollegeView();
+                  return Container(
+                    width: 0.0,
+                    height: 0.0,
+                  );
                 } else {
                   return Container(
                     width: 0.0,

@@ -38,7 +38,7 @@ class NavigationBloc extends Bloc<NavigationEvents, NavigationStates> {
   Stream<NavigationStates> mapEventToState(NavigationEvents event) async* {
     switch (event) {
       case NavigationEvents.HomePageClickedEvent:
-        yield AddCollegeView();
+        yield HomeScreen();
         break;
       case NavigationEvents.MyAccountClickedEvent:
         yield MyAccountsScreen(userService: userService,);
