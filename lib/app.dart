@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_state.dart';
+import 'package:ums_flutter/screens/courses/courses_screen.dart';
 import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/sidebar_screen/sidebar_layout.dart';
 import 'package:ums_flutter/screens/splash_screen.dart';
-
+import 'package:ums_flutter/screens/college/add_college_View.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/theme.dart';
@@ -20,6 +21,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: <String, WidgetBuilder>{
+        '/add_college_View': (BuildContext context) => new AddCollegeView(),
+        '/courses_screen': (BuildContext context) => new AddCourses()
+
+      },
       title: 'UMS',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
@@ -35,7 +35,8 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                 color: Colors.white,
               ),
               onPressed: () {
-                BlocProvider.of<CollegeBloc>(context).add(CreateCollege());
+                Navigator.of(context).pushNamed(
+                    '/AddCollegeaivew');
                 return Container(
                   width: 0.0,
                   height: 0.0,

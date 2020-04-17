@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/bloc/user_bloc.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/college_service.dart';
@@ -40,6 +40,9 @@ class SideBarLayout extends StatelessWidget {
           ),
           BlocProvider<CollegesBloc>(
             create: (context) => CollegesBloc(collegeService: _collegeService),
+          ),
+          BlocProvider<CollegeBloc>(
+            create: (context) => CollegeBloc(collegeService: _collegeService),
           ),
           BlocProvider<CollegeBloc>(
             create: (context) => CollegeBloc(collegeService: _collegeService),

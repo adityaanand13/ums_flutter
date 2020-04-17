@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 
 class HomeScreen extends StatelessWidget with NavigationStates {
 

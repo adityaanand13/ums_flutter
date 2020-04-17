@@ -42,7 +42,16 @@ class EditCollege extends CollegeState{
 
 }
 
-class AddCollege extends CollegeState{}
+class AddCollege extends CollegeState{
+  final CollegeResponse collegeResponse;
+
+  AddCollege({@required this.collegeResponse});
+
+  @override
+  String toString () {
+    return 'AddCollege{collegeResponse: $collegeResponse}';
+  }
+}
 
 class CollegeError extends CollegeState {
   final String error;

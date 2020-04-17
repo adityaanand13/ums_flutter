@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 
 import 'menu_item.dart';

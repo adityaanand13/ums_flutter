@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/models/request/college_request.dart';
@@ -56,6 +56,7 @@ class _AddCollegeViewState extends State<AddCollegeView> {
             children: <Widget>[
               Container(
                 child: Stack(
+
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(
@@ -80,7 +81,7 @@ class _AddCollegeViewState extends State<AddCollegeView> {
                         children: <Widget>[
                           Text('New College',
                               style: TextStyle(
-                                  fontSize: SizeConfig.blockSizeHorizontal * 15,
+                                  fontSize: SizeConfig.blockSizeHorizontal * 11,
                                   fontWeight: FontWeight.bold)),
                           Text('.',
                               textDirection: TextDirection.ltr,

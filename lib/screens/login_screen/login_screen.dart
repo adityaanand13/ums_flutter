@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/bloc/login_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';

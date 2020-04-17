@@ -189,7 +189,8 @@ class CollegeView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       OutlineButton(
-                        onPressed: () => {print('hey')},
+                        onPressed: () => Navigator.of(context).pushNamed(
+                            '/courses_screen'),
                         borderSide: BorderSide(
                           color: Colors.amber,
                           style: BorderStyle.solid,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/navigation_bloc.dart';
+import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/bloc/user_bloc.dart';
 import 'package:ums_flutter/event_state/user/user_event.dart';
 import 'package:ums_flutter/event_state/user/user_state.dart';
