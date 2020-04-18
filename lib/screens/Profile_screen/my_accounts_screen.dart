@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/bloc/user_bloc.dart';
 import 'package:ums_flutter/event_state/user/user_event.dart';
 import 'package:ums_flutter/event_state/user/user_state.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
+import 'package:ums_flutter/widget/Side_drawer.dart';
 
 import 'profile_page_view.dart';
 
-class MyAccountsScreen extends StatefulWidget with NavigationStates {
+class MyAccountsScreen extends StatefulWidget {
   //todo check for unused variable
   final UserService userService;
+  final SideDrawer sideDrawer;
 
-  const MyAccountsScreen({Key key, this.userService})
+  const MyAccountsScreen({Key key, this.userService, this.sideDrawer})
       : assert(userService != null),
+        assert(sideDrawer != null),
         super(key: key);
   @override
   _MyAccountsScreenState createState() => _MyAccountsScreenState();

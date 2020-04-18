@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
+import 'package:ums_flutter/widget/Side_drawer.dart';
 
-class AddCourses extends StatefulWidget with NavigationStates {
+class AddCourses extends StatefulWidget {
+  final SideDrawer sideDrawer;
+
+  const AddCourses({Key key, this.sideDrawer}) : assert(sideDrawer != null) ,super(key: key);
+
   @override
   _AddCoursesState createState() => _AddCoursesState();
 }
@@ -18,6 +22,7 @@ class _AddCoursesState extends State<AddCourses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: widget.sideDrawer,
       backgroundColor: Color.fromRGBO(16, 16, 16, 1),
       body: Column(
         children: <Widget>[
@@ -79,98 +84,97 @@ class _AddCoursesState extends State<AddCourses> {
             top: true,
             bottom: true,
             child: new Form(
-                key: _formKey,
-                autovalidate: true,
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  children: <Widget>[
-                    new TextFormField(
-                      controller: _courseIdController,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      decoration: const InputDecoration(
-                        fillColor: Colors.white,
+              key: _formKey,
+              autovalidate: true,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                children: <Widget>[
+                  new TextFormField(
+                    controller: _courseIdController,
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    decoration: const InputDecoration(
+                      fillColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.white),
+                      icon: const Icon(Icons.person_outline),
+                      hintText: 'Enter Course ID',
+                      labelText: 'ID',
+                    ),
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+                  new TextFormField(
+                    controller: _courseNameController,
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    decoration: const InputDecoration(
+                        icon: const Icon(Icons.person),
                         labelStyle: TextStyle(color: Colors.white),
-                        icon: const Icon(Icons.person_outline),
-                        hintText: 'Enter Course ID',
-                        labelText: 'ID',
-                      ),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter.digitsOnly,
-                      ],
+                        hintText: 'Enter Course name',
+                        labelText: 'Course'),
+                  ),
+                  new TextFormField(
+                    controller: _courseCodeController,
+                    style: TextStyle(
+                      color: Colors.grey,
                     ),
-                    new TextFormField(
-                      controller: _courseNameController,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      decoration: const InputDecoration(
-                          icon: const Icon(Icons.person),
-                          labelStyle: TextStyle(color: Colors.white),
-                          hintText: 'Enter Course name',
-                          labelText: 'Course'),
+                    decoration: const InputDecoration(
+                        icon: const Icon(Icons.person),
+                        labelStyle: TextStyle(color: Colors.white),
+                        hintText: 'Enter Course Code',
+                        labelText: 'Code'),
+                  ),
+                  new TextFormField(
+                    controller: _courseDescriptionController,
+                    style: TextStyle(
+                      color: Colors.grey,
                     ),
-                    new TextFormField(
-                      controller: _courseCodeController,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      decoration: const InputDecoration(
-                          icon: const Icon(Icons.person),
-                          labelStyle: TextStyle(color: Colors.white),
-                          hintText: 'Enter Course Code',
-                          labelText: 'Code'),
+                    decoration: const InputDecoration(
+                        icon: const Icon(Icons.person),
+                        labelStyle:
+                            TextStyle(color: Colors.white, fontSize: 23),
+                        hintText: 'Enter Course description',
+                        labelText: 'Description'),
+                  ),
+                  new TextFormField(
+                    controller: _courseDurationController,
+                    style: TextStyle(
+                      color: Colors.grey,
                     ),
-                    new TextFormField(
-                      controller: _courseDescriptionController,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      decoration: const InputDecoration(
-                          icon: const Icon(Icons.person),
-                          labelStyle: TextStyle(color: Colors.white,
-                              fontSize: 23),
-                          hintText: 'Enter Course description',
-                          labelText: 'Description'),
-                    ),
-                    new TextFormField(
-                      controller: _courseDurationController,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      decoration: const InputDecoration(
-                          icon: const Icon(Icons.person),
-                          labelStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 23
-                          ),
-                          hintText: 'Enter Course duration',
-                          labelText: 'Duration'),
-                    ),
-                    SizedBox(height: 30.0),
-                    Container(
-                      height: 50.0,
-                      child: Material(
-                        borderRadius: BorderRadius.circular(20.0),
-                        shadowColor: Colors.greenAccent,
-                        color: Colors.green,
-                        elevation: 7.0,
-                        child: Center(
-                          child: Text(
-                            'SUBMIT',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Montserrat'),
-                          ),
+                    decoration: const InputDecoration(
+                        icon: const Icon(Icons.person),
+                        labelStyle:
+                            TextStyle(color: Colors.white, fontSize: 23),
+                        hintText: 'Enter Course duration',
+                        labelText: 'Duration'),
+                  ),
+                  SizedBox(height: 30.0),
+                  Container(
+                    height: 50.0,
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20.0),
+                      shadowColor: Colors.greenAccent,
+                      color: Colors.green,
+                      elevation: 7.0,
+                      child: Center(
+                        child: Text(
+                          'SUBMIT',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Montserrat'),
                         ),
                       ),
-                    )
-                  ],
-                )),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ],
       ),

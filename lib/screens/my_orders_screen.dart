@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 
-
-
-class MyOrdersScreen extends StatelessWidget with NavigationStates {
+class MyOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
