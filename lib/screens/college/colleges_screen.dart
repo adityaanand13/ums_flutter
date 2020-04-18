@@ -2,30 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
-import 'package:ums_flutter/bloc/navigation/navigation_bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
-import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
-import 'package:ums_flutter/screens/college/add_college_View.dart';
 import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
+import 'package:ums_flutter/widget/Side_drawer.dart';
 
-class HomeScreen extends StatelessWidget with NavigationStates {
+class CollegesScreen extends StatelessWidget {
+  final SideDrawer sideDrawer;
+
+  const CollegesScreen({Key key, this.sideDrawer})
+      : assert(sideDrawer != null),
+        super(key: key);
+
+  void _refresh(BuildContext context) {
+    BlocProvider.of<CollegesBloc>(context).add(GetCollegeS());
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Color.fromRGBO(16, 16, 16, 1),
-      //todo add a blockBuilder
-      //if ( stat is Display College) then pen color green
-      //on press - chnage event to edit
-      //if state is coleges then diplay add icon  color blue
-      //change event to create college
-      //if state is edit then display tick green
-      //chnage event to create college
+      drawer: sideDrawer,
       floatingActionButton: BlocBuilder<CollegeBloc, CollegeState>(
         builder: (context, state) {
           if (state is CollegeAbsent) {
@@ -35,8 +37,7 @@ class HomeScreen extends StatelessWidget with NavigationStates {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.of(context).pushNamed(
-                    '/AddCollegeaivew');
+                Navigator.of(context).pushNamed('/AddCollegeScreen');
                 return Container(
                   width: 0.0,
                   height: 0.0,
@@ -51,7 +52,6 @@ class HomeScreen extends StatelessWidget with NavigationStates {
           }
         },
       ),
-
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
