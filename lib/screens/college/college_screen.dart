@@ -32,8 +32,9 @@ class HomeScreen extends StatelessWidget with NavigationStates {
             return FloatingActionButton(
               child: Icon(
                 Icons.add,
-                color: Colors.white,
+                color: Colors.black,
               ),
+              backgroundColor: Colors.blueAccent,
               onPressed: () {
                 Navigator.of(context).pushNamed(
                     '/AddCollegeaivew');

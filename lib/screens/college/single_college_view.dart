@@ -190,7 +190,7 @@ class CollegeView extends StatelessWidget {
                     children: <Widget>[
                       OutlineButton(
                         onPressed: () => Navigator.of(context).pushNamed(
-                            '/courses_screen'),
+                            '/add_courses_screen'),
                         borderSide: BorderSide(
                           color: Colors.amber,
                           style: BorderStyle.solid,
@@ -202,7 +202,8 @@ class CollegeView extends StatelessWidget {
                         ),
                       ),
                       OutlineButton(
-                        onPressed: () => {print('hey')},
+                        onPressed: () => Navigator.of(context).pushNamed(
+                            '/add_tutor_screen'),
                         borderSide: BorderSide(
                           color: Colors.lightGreen,
                           style: BorderStyle.solid,

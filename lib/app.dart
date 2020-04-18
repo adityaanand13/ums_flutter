@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_state.dart';
-import 'package:ums_flutter/screens/courses/courses_screen.dart';
+import 'package:ums_flutter/screens/add_tutor_screen.dart';
+import 'package:ums_flutter/screens/courses/add_courses_screen.dart';
 import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/sidebar_screen/sidebar_layout.dart';
 import 'package:ums_flutter/screens/splash_screen.dart';
@@ -23,7 +24,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: <String, WidgetBuilder>{
         '/add_college_View': (BuildContext context) => new AddCollegeView(),
-        '/courses_screen': (BuildContext context) => new AddCourses()
+        '/add_courses_screen': (BuildContext context) => new AddCourses(),
+        '/add_tutor_screen': (BuildContext context) => new AddTutor()
+
 
       },
       title: 'UMS',
