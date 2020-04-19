@@ -9,8 +9,9 @@ import 'package:ums_flutter/utils/sizeConfig.dart';
 
 class CollegeView extends StatelessWidget {
   final CollegeResponse collegeResponse;
+  final Function changeState;
 
-  CollegeView({@required this.collegeResponse})
+  CollegeView({@required this.collegeResponse, @required this.changeState})
       : assert(collegeResponse != null);
 
   @override
@@ -213,8 +214,7 @@ class CollegeView extends StatelessWidget {
                         ),
                       ),
                       RaisedButton(
-                        onPressed: () => BlocProvider.of<CollegeBloc>(context)
-                            .add(CloseCollege()),
+                        onPressed: changeState(null),
                         color: Colors.blueAccent,
                         child: Text(
                           'Back',

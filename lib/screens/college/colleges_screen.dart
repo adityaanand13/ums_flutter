@@ -6,6 +6,7 @@ import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
+import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
 import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
@@ -14,17 +15,22 @@ import 'package:ums_flutter/widget/Side_drawer.dart';
 class CollegesScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
 
-  const CollegesScreen({Key key, this.sideDrawer}) : assert(sideDrawer != null), super(key: key);
+  const CollegesScreen({Key key, this.sideDrawer})
+      : assert(sideDrawer != null),
+        super(key: key);
 
   @override
   _CollegesScreenState createState() => _CollegesScreenState();
 }
 
 class _CollegesScreenState extends State<CollegesScreen> {
-
   void _refresh(BuildContext context) {
     BlocProvider.of<CollegesBloc>(context).add(GetCollegeS());
   }
+  changeState(CollegeResponse collegeResponse) {
+      collegeResponse = collegeResponse;
+  }
+  CollegeResponse collegeResponse = null;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +44,9 @@ class _CollegesScreenState extends State<CollegesScreen> {
             return FloatingActionButton(
               child: Icon(
                 Icons.add,
-                color: Colors.white,
+                color: Colors.green,
               ),
+              backgroundColor: Colors.white,
               onPressed: () {
                 Navigator.of(context).pushNamed('/AddCollegeScreen');
                 return Container(
@@ -71,11 +78,11 @@ class _CollegesScreenState extends State<CollegesScreen> {
                       ShaderMask(
                         shaderCallback: (rect) {
                           return LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.black, Colors.transparent])
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [Colors.black, Colors.transparent])
                               .createShader(
-                              Rect.fromLTRB(0, 0, rect.width, rect.height));
+                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
                         },
                         blendMode: BlendMode.dstIn,
                         //todo change image
@@ -105,14 +112,14 @@ class _CollegesScreenState extends State<CollegesScreen> {
                                     style: TextStyle(
                                         fontFamily: 'Oswald',
                                         fontSize:
-                                        SizeConfig.blockSizeHorizontal * 10,
+                                            SizeConfig.blockSizeHorizontal * 10,
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFFFD3664))),
                                 Text(',',
                                     style: TextStyle(
                                         fontFamily: 'Oswald',
                                         fontSize:
-                                        SizeConfig.blockSizeHorizontal * 10,
+                                            SizeConfig.blockSizeHorizontal * 10,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white)),
                                 SizedBox(width: 10.0),
@@ -121,7 +128,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
                                   style: TextStyle(
                                       fontFamily: 'Oswald',
                                       fontSize:
-                                      SizeConfig.blockSizeHorizontal * 10,
+                                          SizeConfig.blockSizeHorizontal * 10,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
@@ -150,15 +157,15 @@ class _CollegesScreenState extends State<CollegesScreen> {
                       if (state is CollegesPresent) {
                         return Column(
                             children:
-                            _collegesList(state.collegesResponse, context));
+                                _collegesList(state.collegesResponse, context));
                       } else if (state is CollegesAbsent) {
                         BlocProvider.of<CollegesBloc>(context)
                             .add(GetCollegeS());
                         return Center(
                             child: Container(
-                              width: 0.0,
-                              height: 0.0,
-                            ));
+                          width: 0.0,
+                          height: 0.0,
+                        ));
                       } else if (state is CollegesLoading) {
                         return Center(
                           child: LinearProgressIndicator(),
@@ -175,52 +182,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
               ],
             ),
           ),
-          BlocListener<CollegeBloc, CollegeState>(
-            listener: (context, state) {
-              if (state is CollegeError) {
-                Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${state.error}',
-                      style: TextStyle(
-                        color: Colors.green,
-                      ),
-                    ),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 3),
-                  ),
-                );
-              }
-            },
-            child: BlocBuilder<CollegeBloc, CollegeState>(
-              builder: (context, state) {
-                if (state is CollegePresent) {
-                  return CollegeView(collegeResponse: state.collegeResponse);
-                } else if (state is CollegeAbsent) {
-                  return Container(
-                    height: 0,
-                    width: 0,
-                  );
-                } else if (state is CollegeLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (state is EditCollege) {
-                  return Center(child: Text("Error aaya bhai"));
-                } else if (state is AddCollege) {
-                  return Container(
-                    width: 0.0,
-                    height: 0.0,
-                  );
-                } else {
-                  return Container(
-                    width: 0.0,
-                    height: 0.0,
-                  );
-                }
-              },
-            ),
-          ),
+          collegeResponse != null ? CollegeView(collegeResponse: collegeResponse, changeState: changeState,) : Container(height: 0, width: 0,),
         ],
       ),
     );
@@ -229,12 +191,11 @@ class _CollegesScreenState extends State<CollegesScreen> {
   //todo refactor content display
   List<Widget> _collegesList(
       CollegesResponse collegesResponse, BuildContext context) {
-    List<Widget> list = new List <Widget> ();
+    List<Widget> list = new List<Widget>();
     for (var college in collegesResponse.colleges) {
       list.add(
         GestureDetector(
-          onTap: () => BlocProvider.of<CollegeBloc>(context)
-              .add(GetCollege(id: college.id)),
+          onTap: changeState(college),
           child: Column(
             children: <Widget>[
               ListTile(
@@ -257,13 +218,6 @@ class _CollegesScreenState extends State<CollegesScreen> {
                       ),
                     ),
                   ],
-                ),
-                leading: CircleAvatar(
-                  child: Icon(
-                    Icons.perm_identity,
-                    color: Colors.white,
-                  ),
-                  radius: 40,
                 ),
               ),
               Divider(
