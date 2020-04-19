@@ -147,7 +147,7 @@ class CollegeView extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.only(bottom: 10),
                         child: Text(
-                          'Infront of OBC market, Beside staff parking, South Block, MMDU',
+                          '${collegeResponse.address}',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 16,
@@ -196,7 +196,7 @@ class CollegeView extends StatelessWidget {
                           width: 0.8,
                         ),
                         child: Text(
-                          'Add Course',
+                          'Detailed View',
                           style: TextStyle(color: Colors.amberAccent,),
                         ),
                       ),

@@ -4,6 +4,7 @@ import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_state.dart';
 import 'package:ums_flutter/screens/Profile_screen/my_accounts_screen.dart';
+import 'package:ums_flutter/screens/college/college_detail_screen.dart';
 import 'package:ums_flutter/screens/college/colleges_screen.dart';
 import 'package:ums_flutter/screens/courses/courses_screen.dart';
 import 'package:ums_flutter/screens/home.dart';
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
             if (state is AuthenticationAuthenticated) {
-              return HomeScreen(sideDrawer: sideDrawer,);
+              return CollegeDetailScreen(sideDrawer: sideDrawer);
             }
             if (state is AuthenticationUnauthenticated) {
               return LoginScreen(

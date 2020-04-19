@@ -11,12 +11,16 @@ import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 import 'package:ums_flutter/widget/Side_drawer.dart';
 
-class CollegesScreen extends StatelessWidget {
+class CollegesScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
 
-  const CollegesScreen({Key key, this.sideDrawer})
-      : assert(sideDrawer != null),
-        super(key: key);
+  const CollegesScreen({Key key, this.sideDrawer}) : assert(sideDrawer != null), super(key: key);
+
+  @override
+  _CollegesScreenState createState() => _CollegesScreenState();
+}
+
+class _CollegesScreenState extends State<CollegesScreen> {
 
   void _refresh(BuildContext context) {
     BlocProvider.of<CollegesBloc>(context).add(GetCollegeS());
@@ -27,7 +31,7 @@ class CollegesScreen extends StatelessWidget {
     SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Color.fromRGBO(16, 16, 16, 1),
-      drawer: sideDrawer,
+      drawer: widget.sideDrawer,
       floatingActionButton: BlocBuilder<CollegeBloc, CollegeState>(
         builder: (context, state) {
           if (state is CollegeAbsent) {
@@ -67,11 +71,11 @@ class CollegesScreen extends StatelessWidget {
                       ShaderMask(
                         shaderCallback: (rect) {
                           return LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [Colors.black, Colors.transparent])
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.black, Colors.transparent])
                               .createShader(
-                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
+                              Rect.fromLTRB(0, 0, rect.width, rect.height));
                         },
                         blendMode: BlendMode.dstIn,
                         //todo change image
@@ -101,14 +105,14 @@ class CollegesScreen extends StatelessWidget {
                                     style: TextStyle(
                                         fontFamily: 'Oswald',
                                         fontSize:
-                                            SizeConfig.blockSizeHorizontal * 10,
+                                        SizeConfig.blockSizeHorizontal * 10,
                                         fontWeight: FontWeight.bold,
                                         color: Color(0xFFFD3664))),
                                 Text(',',
                                     style: TextStyle(
                                         fontFamily: 'Oswald',
                                         fontSize:
-                                            SizeConfig.blockSizeHorizontal * 10,
+                                        SizeConfig.blockSizeHorizontal * 10,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white)),
                                 SizedBox(width: 10.0),
@@ -117,7 +121,7 @@ class CollegesScreen extends StatelessWidget {
                                   style: TextStyle(
                                       fontFamily: 'Oswald',
                                       fontSize:
-                                          SizeConfig.blockSizeHorizontal * 10,
+                                      SizeConfig.blockSizeHorizontal * 10,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white),
                                 ),
@@ -146,15 +150,15 @@ class CollegesScreen extends StatelessWidget {
                       if (state is CollegesPresent) {
                         return Column(
                             children:
-                                _collegesList(state.collegesResponse, context));
+                            _collegesList(state.collegesResponse, context));
                       } else if (state is CollegesAbsent) {
                         BlocProvider.of<CollegesBloc>(context)
                             .add(GetCollegeS());
                         return Center(
                             child: Container(
-                          width: 0.0,
-                          height: 0.0,
-                        ));
+                              width: 0.0,
+                              height: 0.0,
+                            ));
                       } else if (state is CollegesLoading) {
                         return Center(
                           child: LinearProgressIndicator(),
@@ -225,7 +229,7 @@ class CollegesScreen extends StatelessWidget {
   //todo refactor content display
   List<Widget> _collegesList(
       CollegesResponse collegesResponse, BuildContext context) {
-    List<Widget> list = new List<Widget>();
+    List<Widget> list = new List <Widget> ();
     for (var college in collegesResponse.colleges) {
       list.add(
         GestureDetector(
