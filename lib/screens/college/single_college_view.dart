@@ -214,7 +214,7 @@ class CollegeView extends StatelessWidget {
                         ),
                       ),
                       RaisedButton(
-                        onPressed: changeState(null),
+                        onPressed: () => changeState(null),
                         color: Colors.blueAccent,
                         child: Text(
                           'Back',

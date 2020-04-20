@@ -27,6 +27,21 @@ class CollegePresent extends CollegeState{
 
 }
 
+class CollegeAdded extends CollegeState{
+  final CollegeResponse collegeResponse;
+
+  CollegeAdded({@required this.collegeResponse});
+
+  @override
+  String toString () {
+    return 'CollegeAdded{collegeResponse: $collegeResponse}';
+  }
+
+  @override
+  List<Object> get props => [collegeResponse];
+
+}
+
 class EditCollege extends CollegeState{
   final CollegeResponse collegeResponse;
 

@@ -20,17 +20,17 @@ class CollegeBloc extends Bloc<CollegeEvent, CollegeState> {
       if (event is GetCollege){
         yield CollegeLoading();
         CollegeResponse collegeResponse = await collegeService.getCollege(event.id);
-        yield CollegePresent(collegeResponse: collegeResponse);
+        yield CollegeAdded(collegeResponse: collegeResponse);
       }
       else if (event is UpdateCollege){
         yield CollegeLoading();
         CollegeResponse collegeResponse = await collegeService.updateCollege(event.collegeRequest);
-        yield CollegePresent(collegeResponse: collegeResponse);
+        yield CollegeAdded(collegeResponse: collegeResponse);
       }
       else if (event is CreateCollegeButtonPressed){
         yield CollegeLoading();
         CollegeResponse collegeResponse = await collegeService.createCollege(event.collegeRequest);
-        yield CollegePresent(collegeResponse: collegeResponse);
+        yield CollegeAdded(collegeResponse: collegeResponse);
       }
       //todo refactor
       else if (event is CreateCollege){

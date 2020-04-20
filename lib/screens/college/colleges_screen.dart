@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
-import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
 import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
@@ -27,9 +26,14 @@ class _CollegesScreenState extends State<CollegesScreen> {
   void _refresh(BuildContext context) {
     BlocProvider.of<CollegesBloc>(context).add(GetCollegeS());
   }
+
   changeState(CollegeResponse collegeResponse) {
-      collegeResponse = collegeResponse;
+    setState(() {
+      show = !show;
+    });
   }
+
+  bool show = false;
   CollegeResponse collegeResponse = null;
 
   @override
@@ -38,31 +42,33 @@ class _CollegesScreenState extends State<CollegesScreen> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(16, 16, 16, 1),
       drawer: widget.sideDrawer,
-      floatingActionButton: BlocBuilder<CollegeBloc, CollegeState>(
-        builder: (context, state) {
-          if (state is CollegeAbsent) {
-            return FloatingActionButton(
-              child: Icon(
-                Icons.add,
-                color: Colors.green,
-              ),
-              backgroundColor: Colors.white,
-              onPressed: () {
-                Navigator.of(context).pushNamed('/AddCollegeScreen');
-                return Container(
-                  width: 0.0,
-                  height: 0.0,
-                );
+      floatingActionButton: !show
+          ? BlocBuilder<CollegeBloc, CollegeState>(
+              builder: (context, state) {
+                if (state is CollegeAbsent) {
+                  return FloatingActionButton(
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    ),
+                    backgroundColor: Colors.lightGreen,
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/AddCollegeScreen');
+                      return Container(
+                        width: 0.0,
+                        height: 0.0,
+                      );
+                    },
+                  );
+                } else {
+                  return Container(
+                    width: 0.0,
+                    height: 0.0,
+                  );
+                }
               },
-            );
-          } else {
-            return Container(
-              width: 0.0,
-              height: 0.0,
-            );
-          }
-        },
-      ),
+            )
+          : null,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -155,9 +161,12 @@ class _CollegesScreenState extends State<CollegesScreen> {
                   child: BlocBuilder<CollegesBloc, CollegesState>(
                     builder: (context, state) {
                       if (state is CollegesPresent) {
-                        return Column(
-                            children:
-                                _collegesList(state.collegesResponse, context));
+                        return Container(
+                          padding: EdgeInsets.all(22),
+                          child: Column(
+                              children: _collegesList(
+                                  state.collegesResponse, context)),
+                        );
                       } else if (state is CollegesAbsent) {
                         BlocProvider.of<CollegesBloc>(context)
                             .add(GetCollegeS());
@@ -182,7 +191,15 @@ class _CollegesScreenState extends State<CollegesScreen> {
               ],
             ),
           ),
-          collegeResponse != null ? CollegeView(collegeResponse: collegeResponse, changeState: changeState,) : Container(height: 0, width: 0,),
+          show
+              ? CollegeView(
+                  collegeResponse: collegeResponse,
+                  changeState: changeState,
+                )
+              : Container(
+                  height: 0,
+                  width: 0,
+                ),
         ],
       ),
     );
@@ -195,11 +212,14 @@ class _CollegesScreenState extends State<CollegesScreen> {
     for (var college in collegesResponse.colleges) {
       list.add(
         GestureDetector(
-          onTap: changeState(college),
+          onTap: () {
+            collegeResponse = college;
+            changeState(college);
+          },
           child: Column(
             children: <Widget>[
               ListTile(
-                contentPadding: EdgeInsets.all(5),
+                contentPadding: EdgeInsets.only(bottom: 2),
                 title: Text(
                   '${college.code}',
                   style: TextStyle(
@@ -224,8 +244,6 @@ class _CollegesScreenState extends State<CollegesScreen> {
                 height: SizeConfig.blockSizeVertical * 2.5,
                 thickness: 0.5,
                 color: Colors.white.withOpacity(0.3),
-                indent: 32,
-                endIndent: 32,
               ),
             ],
           ),
