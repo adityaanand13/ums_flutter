@@ -10,10 +10,10 @@ import 'dart:convert' show json;
 import 'package:ums_flutter/exception/CustomException.dart';
 import 'package:ums_flutter/utils/constants.dart';
 
-class CollegeApiProvider{
-  static const _BASE_URL = "$BASE_URL/api/college";
+class InstructorApiProvider{
+  static const _BASE_URL = "$BASE_URL/api/instructor";
 
-  Future<dynamic>  get(String route, String token) async{
+  Future<dynamic>  getInstructor(String route, String token) async{
     var responseJson;
     var headers = {
       "Content-Type": "application/json",
@@ -61,7 +61,6 @@ class CollegeApiProvider{
   }
 
   //todo move to separate class
-  //returns json
   dynamic _response(http.Response response) {
     switch (response.statusCode) {
       case 200:
@@ -81,6 +80,4 @@ class CollegeApiProvider{
             'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
-
-  delete(String s, String token) {}
 }

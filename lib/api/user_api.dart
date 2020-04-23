@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 import 'package:ums_flutter/exception/CustomException.dart';
+import 'package:ums_flutter/utils/constants.dart';
 
 class UserApiProvider{
-  static const _BASE_URL = "https://60082201.ngrok.io/api/user";
+  static const _BASE_URL = "$BASE_URL/api/user";
 
   Future<dynamic>  getUser(String route, String token) async{
     var responseJson;

@@ -1,0 +1,1 @@
+//instructor model is similar to user model, any addition win future will be added here

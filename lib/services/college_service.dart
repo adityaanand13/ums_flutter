@@ -46,4 +46,10 @@ class CollegeService {
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
+
+  Future<bool> addPrincipal({int collegeID, String username}) async {
+    String token = await _storage.read(key: "token");
+    var response = await _provider.post(null, "$collegeID/add-principal/$username", token);
+    return true;
+  }
 }

@@ -8,15 +8,19 @@ import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/models/request/college_request.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/screens/college/add_Principal.dart';
+import 'package:ums_flutter/screens/college/add_principal.dart';
+import 'package:ums_flutter/services/college_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 import 'package:ums_flutter/widget/Side_drawer.dart';
 
 class AddCollegeScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
+  final CollegeService collegeService;
 
-  const AddCollegeScreen({Key key, this.sideDrawer})
+  const AddCollegeScreen(
+      {Key key, @required this.sideDrawer, @required this.collegeService})
       : assert(sideDrawer != null),
+        assert(collegeService != null),
         super(key: key);
 
   @override
@@ -60,7 +64,9 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
                 children: <Widget>[
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(22),topRight: Radius.circular(22)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(22),
+                          topRight: Radius.circular(22)),
                       color: Color.fromRGBO(32, 32, 32, 1),
                     ),
                     height: SizeConfig.blockSizeVertical * 10,
@@ -82,40 +88,40 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
                       color: Color.fromRGBO(16, 16, 16, 1),
                     ),
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'College Has been created succesfully. press Continue to add principal',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: SizeConfig.blockSizeHorizontal * 3.75,
-                            ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'College Has been created succesfully. press Continue to add principal',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: SizeConfig.blockSizeHorizontal * 3.75,
                           ),
-                          SizedBox(height: SizeConfig.blockSizeVertical * 2),
-                          Center(
-                            child: RaisedButton(
-                              color: Colors.lightGreen,
-                              child: Text(
-                                "Continue",
-                                style: TextStyle(
-                                  color: Colors.white),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  new MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        new AddPrincipal(
-                                      sideDrawer: widget.sideDrawer,
-                                      collegeResponse: collegeResponse,
-                                    ),
-                                  ),
-                                );
-                              },
+                        ),
+                        SizedBox(height: SizeConfig.blockSizeVertical * 2),
+                        Center(
+                          child: RaisedButton(
+                            color: Colors.lightGreen,
+                            child: Text(
+                              "Continue",
+                              style: TextStyle(color: Colors.white),
                             ),
-                          )
-                        ],
-                      ),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      new AddPrincipalScreen(
+                                    sideDrawer: widget.sideDrawer,
+                                    collegeResponse: collegeResponse,
+                                    collegeService: widget.collegeService,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   )
                 ],
               ),

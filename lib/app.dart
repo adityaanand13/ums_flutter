@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ums_flutter/bloc/add_princiapal_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/bloc/colleges_bloc.dart';
+import 'package:ums_flutter/bloc/instructor_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_state.dart';
 import 'package:ums_flutter/screens/Profile_screen/my_accounts_screen.dart';
-import 'package:ums_flutter/screens/college/add_Principal.dart';
+import 'package:ums_flutter/screens/college/add_principal.dart';
 import 'package:ums_flutter/screens/college/college_detail_screen.dart';
 import 'package:ums_flutter/screens/college/colleges_screen.dart';
 import 'package:ums_flutter/screens/courses/courses_screen.dart';
 import 'package:ums_flutter/screens/home.dart';
 import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/splash_screen.dart';
-import 'package:ums_flutter/screens/college/add_college_Screen.dart';
+import 'package:ums_flutter/screens/college/add_college_screen.dart';
 import 'package:ums_flutter/services/auth_service.dart';
+import 'package:ums_flutter/services/instructor_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/theme.dart';
 import 'package:ums_flutter/widget/Side_drawer.dart';
@@ -26,6 +29,7 @@ class MyApp extends StatelessWidget {
   final UserService userService;
 
   final CollegeService _collegeService = CollegeService();
+  final InstructorService _instructorService = InstructorService();
 
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
@@ -34,7 +38,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SideDrawer sideDrawer = new SideDrawer(authService: authService, userService: userService);
+    SideDrawer sideDrawer =
+        new SideDrawer(authService: authService, userService: userService);
     return MultiBlocProvider(
       providers: [
         BlocProvider<UserBloc>(
@@ -48,6 +53,14 @@ class MyApp extends StatelessWidget {
         BlocProvider<CollegeBloc>(
           create: (context) => CollegeBloc(collegeService: _collegeService),
         ),
+        BlocProvider<AddPrincipalBloc>(
+          create: (context) =>
+              AddPrincipalBloc(collegeService: _collegeService),
+        ),
+        BlocProvider<InstructorBloc>(
+          create: (context) =>
+              InstructorBloc(instructorService: _instructorService),
+        ),
       ],
       child: MaterialApp(
         title: 'UMS',
@@ -58,7 +71,9 @@ class MyApp extends StatelessWidget {
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
             if (state is AuthenticationAuthenticated) {
-              return HomeScreen(sideDrawer: sideDrawer,);
+              return HomeScreen(
+                sideDrawer: sideDrawer,
+              );
             }
             if (state is AuthenticationUnauthenticated) {
               return LoginScreen(
@@ -75,13 +90,20 @@ class MyApp extends StatelessWidget {
           },
         ),
         routes: <String, WidgetBuilder>{
-          '/CollegesScreen': (BuildContext context) => new CollegesScreen(sideDrawer: sideDrawer),
-          '/AddCollegeScreen': (BuildContext context) => new AddCollegeScreen(sideDrawer: sideDrawer),
-          '/MyProfileScreen': (BuildContext context) => new MyAccountsScreen(userService: userService, sideDrawer: sideDrawer),
+          '/CollegesScreen': (BuildContext context) =>
+              new CollegesScreen(sideDrawer: sideDrawer),
+          '/AddCollegeScreen': (BuildContext context) => new AddCollegeScreen(
+                sideDrawer: sideDrawer,
+                collegeService: _collegeService,
+              ),
+          '/MyProfileScreen': (BuildContext context) => new MyAccountsScreen(
+              userService: userService, sideDrawer: sideDrawer),
           //todo refactor to scaffold
 //          '/AddCollegeScreen': (BuildContext context) => new AddCollegeView(sideDrawer: sideDrawer),
-          '/AddCourses': (BuildContext context) => new AddCourses(sideDrawer: sideDrawer),
-          '/LoginScreen': (BuildContext context) => new LoginScreen(authService: authService, userService: userService)
+          '/AddCourses': (BuildContext context) =>
+              new AddCourses(sideDrawer: sideDrawer),
+          '/LoginScreen': (BuildContext context) => new LoginScreen(
+              authService: authService, userService: userService)
         },
       ),
     );
