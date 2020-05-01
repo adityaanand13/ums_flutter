@@ -10,10 +10,10 @@ import 'dart:convert' show json;
 import 'package:ums_flutter/exception/CustomException.dart';
 import 'package:ums_flutter/utils/constants.dart';
 
-class InstructorApiProvider{
-  static const _BASE_URL = "$BASE_URL/api/instructor";
+class BatchApiProvider{
+  static const _BASE_URL = "$BASE_URL/api/batch";
 
-  Future<dynamic>  getInstructor(String route, String token) async{
+  Future<dynamic>  get(String route, String token) async{
     var responseJson;
     var headers = {
       "Content-Type": "application/json",
@@ -36,7 +36,6 @@ class InstructorApiProvider{
       "Authorization": 'Bearer $token'
     };
     try{
-      print(body);
       final response = await http.post("$_BASE_URL/$route", headers: headers, body: body);
       responseJson = _response(response);
     }on SocketException {
@@ -62,6 +61,7 @@ class InstructorApiProvider{
   }
 
   //todo move to separate class
+  //returns json
   dynamic _response(http.Response response) {
     switch (response.statusCode) {
       case 200:
@@ -70,15 +70,21 @@ class InstructorApiProvider{
       case 400:
         var responseJson = json.decode(response.body)['error'];
         throw BadRequestException(responseJson);
+      case 404:
+        print(response.body);
+        var responseJson = json.decode(response.body)['error'];
+        throw NotFoundException(responseJson);
       case 401:
-
       case 403:
         var responseJson = json.decode(response.body)['error'];
         throw UnauthorisedException(responseJson);
       case 500:
       default:
+        print(response.body);
         throw FetchDataException(
             'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
     }
   }
+
+  delete(String s, String token) {}
 }
