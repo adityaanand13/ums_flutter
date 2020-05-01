@@ -32,10 +32,6 @@ class CollegeBloc extends Bloc<CollegeEvent, CollegeState> {
         CollegeResponse collegeResponse = await collegeService.createCollege(event.collegeRequest);
         yield CollegeAdded(collegeResponse: collegeResponse);
       }
-      //todo refactor
-      else if (event is CreateCollege){
-        yield AddCollege(collegeResponse: null);
-      }
       //todo remove from colleges list once deleted
       else if (event is DeleteCollege){
         yield CollegeLoading();
