@@ -8,7 +8,7 @@ import 'package:ums_flutter/event_state/user/user_state.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/widget/menu_item.dart';
+import 'package:ums_flutter/components/drawer/menu_item.dart';
 
 class SideDrawer extends StatelessWidget {
   final AuthService authService;
