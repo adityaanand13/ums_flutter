@@ -1,29 +1,40 @@
 
-class CollegeResponse {
+import 'package:equatable/equatable.dart';
+import 'package:ums_flutter/models/response/course_response.dart';
+
+class CollegeResponse extends Equatable{
 
   int id;
   String name;
-  String description;
   String code;
   String address;
-//  List<Object> courses;
+  String phone;
+  String email;
+  List<CourseResponse> courses = List<CourseResponse>();
 
-	CollegeResponse.fromJsonMap(Map<String, dynamic> map): 
-		id = map["id"],
-		name = map["name"],
-		description = map["description"],
-		code = map["code"],
+	CollegeResponse.fromJsonMap(Map<String, dynamic> map){
+		id = map["id"];
+		name = map["name"];
+		code = map["code"];
 		address = map["address"];
-//		courses = map["courses"];
+		phone = map["phone"];
+		email = map["email"];
+		map["courses"].forEach((course) => courses.add(CourseResponse.fromJsonMap(course)));
+	}
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['id'] = id;
 		data['name'] = name;
-		data['description'] = description;
 		data['code'] = code;
 		data['address'] = address;
-//		data['courses'] = courses;
+		data['phone'] = phone;
+		data['email'] = email;
+		data['courses'] = courses;
 		return data;
 	}
+
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
 }
