@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:ums_flutter/models/request/courses_request.dart';
+import 'package:ums_flutter/models/request/course_request.dart';
 
 abstract class CourseEvent extends Equatable {
   CourseEvent([List props = const []]) : super();
@@ -22,8 +22,6 @@ class GetCourse extends CourseEvent {
 
 }
 
-class CloseCourse extends CourseEvent {}
-
 class UpdateCourse extends CourseEvent {
   final CourseRequest courseRequest;
 
@@ -37,16 +35,15 @@ class UpdateCourse extends CourseEvent {
 
 }
 
-class CreateCollege extends CourseEvent {}
-
-class CreateCourseButtonPressed extends CourseEvent {
+class CreateCourse extends CourseEvent {
+  final int collegeId;
   final CourseRequest courseRequest;
 
-  CreateCourseButtonPressed({@required this.courseRequest});
+  CreateCourse({@required this.collegeId, @required this.courseRequest});
 
   @override
   String toString () {
-    return 'CreateCourseButtonPressed{courseRequest: $courseRequest}';
+    return 'CreateCourse {College id: $collegeId, courseRequest: $courseRequest}';
   }
 
 }

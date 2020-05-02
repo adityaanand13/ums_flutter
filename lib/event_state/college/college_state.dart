@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 abstract class CollegeState extends Equatable {
-  const CollegeState();
+  const CollegeState([List props = const []]) : super();
 
   @override
   List<Object> get props => [];
@@ -11,21 +11,6 @@ abstract class CollegeState extends Equatable {
 class CollegeAbsent extends CollegeState{}
 
 class CollegeLoading extends CollegeState{}
-
-class CollegePresent extends CollegeState{
-  final CollegeResponse collegeResponse;
-
-  CollegePresent({@required this.collegeResponse});
-
-  @override
-  String toString () {
-    return 'CollegePresent{collegeResponse: $collegeResponse}';
-  }
-
-  @override
-  List<Object> get props => [collegeResponse];
-
-}
 
 class CollegeAdded extends CollegeState{
   final CollegeResponse collegeResponse;

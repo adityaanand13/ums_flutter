@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 abstract class AddPrincipalState extends Equatable {
-  const AddPrincipalState();
+  const AddPrincipalState() : super();
 
   @override
   List<Object> get props => [];
