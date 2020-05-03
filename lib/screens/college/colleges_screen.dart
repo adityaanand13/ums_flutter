@@ -9,7 +9,7 @@ import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
 import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/widget/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/Side_drawer.dart';
 
 class CollegesScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
@@ -40,35 +40,48 @@ class _CollegesScreenState extends State<CollegesScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+      backgroundColor: Colors.black,
       drawer: widget.sideDrawer,
       floatingActionButton: !show
-          ? BlocBuilder<CollegeBloc, CollegeState>(
-              builder: (context, state) {
-                if (state is CollegeAbsent) {
-                  return FloatingActionButton(
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    backgroundColor: Colors.lightGreen,
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/AddCollegeScreen');
-                      return Container(
-                        width: 0.0,
-                        height: 0.0,
-                      );
-                    },
-                  );
-                } else {
-                  return Container(
-                    width: 0.0,
-                    height: 0.0,
-                  );
-                }
+          ? new FloatingActionButton.extended(
+              backgroundColor: Color(0xFFFD3664),
+              icon: Icon(Icons.add),
+              label: Text(
+                'Add College',
+                style: TextStyle(
+                    fontFamily: 'Oswald',
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/AddCollegeScreen');
               },
-            )
+      )
           : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.menu),
+                color: Colors.white,
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              color: Colors.white,
+              onPressed: () {},
+            ),
+          ],
+        ),
+        color: Color(0xff101010),
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -162,7 +175,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
                     builder: (context, state) {
                       if (state is CollegesPresent) {
                         return Container(
-                          padding: EdgeInsets.all(22),
+                          padding: EdgeInsets.all(18),
                           child: Column(
                               children: _collegesList(
                                   state.collegesResponse, context)),
@@ -195,6 +208,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
               ? CollegeView(
                   collegeResponse: collegeResponse,
                   changeState: changeState,
+                  sideDrawer: widget.sideDrawer,
                 )
               : Container(
                   height: 0,
@@ -218,33 +232,39 @@ class _CollegesScreenState extends State<CollegesScreen> {
           },
           child: Column(
             children: <Widget>[
-              ListTile(
-                contentPadding: EdgeInsets.only(bottom: 2),
-                title: Text(
-                  '${college.code}',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: SizeConfig.blockSizeHorizontal * 4,
-                      fontWeight: FontWeight.w800),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color(0xFF0D0D0D),
+                  border: Border.all(
+                    color: Colors.white24,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                //todo wrap to limited size
-                subtitle: Wrap(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '${college.name}',
+                      "${college.code}",
                       style: TextStyle(
-                        color: Color(0xFF1BB5FD),
-                        fontSize: SizeConfig.blockSizeHorizontal * 3.8,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFFD3664)),
+                    ),
+                    Text(
+                      "${college.name}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
               ),
-              Divider(
-                height: SizeConfig.blockSizeVertical * 2.5,
-                thickness: 0.5,
-                color: Colors.white.withOpacity(0.3),
-              ),
+              SizedBox(height: 10)
             ],
           ),
         ),

@@ -5,14 +5,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
+import 'package:ums_flutter/screens/college/detailed_college_screen.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
+import 'package:ums_flutter/components/drawer/Side_drawer.dart';
 
 class CollegeView extends StatelessWidget {
   final CollegeResponse collegeResponse;
   final Function changeState;
+  final SideDrawer sideDrawer;
 
-  CollegeView({@required this.collegeResponse, @required this.changeState})
-      : assert(collegeResponse != null);
+  CollegeView(
+      {@required this.collegeResponse, @required this.changeState, @required this.sideDrawer})
+      : assert(collegeResponse != null),
+        assert(sideDrawer != null);
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +30,16 @@ class CollegeView extends StatelessWidget {
           sigmaY: 4,
         ),
         child: Container(
-          height: SizeConfig.safeBlockVertical * 65,
           width: SizeConfig.blockSizeHorizontal * 100,
           decoration: BoxDecoration(
-              color: Color.fromRGBO(32, 32, 32, 0.96),
-              borderRadius: BorderRadius.circular(24)),
+              color: Color.fromRGBO(13, 13, 13, 0.96),
+              borderRadius: BorderRadius.circular(18)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 24, left: 24, right: 24),
+                child: Container(
+                  padding: EdgeInsets.all(18),
                   child: Column(
                     children: <Widget>[
                       Container(
@@ -44,55 +48,28 @@ class CollegeView extends StatelessWidget {
                             '${collegeResponse.code}',
                             style: TextStyle(
                               fontSize: 26,
-                              color: Colors.blueAccent,
-                              fontFamily: 'Quicksand',
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 4,
+                              color: Color(0xFFFD3664),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
                       ),
                       Container(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.center,
                         padding: EdgeInsets.only(top: 10, bottom: 10),
                         child: Text(
                           '${collegeResponse.name}',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: Colors.white,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       Container(
-                          padding: EdgeInsets.only(top: 10, bottom: 10),
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Text(
-                                'Description: ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Text(
-                                '${collegeResponse.description}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w200,
-                                ),
-                              ),
-                            ],
-                          )),
-                      Container(
-                          padding: EdgeInsets.only(top: 10, bottom: 5),
+                          padding: EdgeInsets.only(top: 15, bottom: 5),
                           alignment: Alignment.centerLeft,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -102,8 +79,8 @@ class CollegeView extends StatelessWidget {
                                 'Principal: ',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.lightGreenAccent,
-                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFFFD3664),
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
                               Text(
@@ -111,8 +88,6 @@ class CollegeView extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w200,
                                 ),
                               ),
                               Text(
@@ -120,111 +95,85 @@ class CollegeView extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w200,
                                 ),
                               ),
                             ],
                           )),
-                      Divider(
-                        height: SizeConfig.blockSizeVertical * 2.5,
-                        thickness: 1,
-                        color: Colors.blueAccent.withOpacity(0.3),
-                      ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        padding: EdgeInsets.only(top: 15, bottom: 10),
                         child: Text(
                           'Address:',
                           textAlign: TextAlign.start,
                           style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFFFD3664),
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(bottom: 10),
+                        padding: EdgeInsets.only(bottom: 15),
                         child: Text(
                           '${collegeResponse.address}',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
-                            fontWeight: FontWeight.w300,
                           ),
                         ),
                       ),
-                      Divider(
-                        height: SizeConfig.blockSizeVertical * 2.5,
-                        thickness: 1,
-                        color: Colors.blueAccent.withOpacity(0.3),
-                      ),
                       Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(top: 10, bottom: 10),
-                        child: Text(
-                          'Courses:',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            OutlineButton(
+                              onPressed: () =>
+                                  Navigator.of(context).push(
+                                    new MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                        new DetailedCollegeScreen(sideDrawer:sideDrawer, collegeResponse: collegeResponse,)
+                                    ),),
+                              borderSide: BorderSide(
+                                color: Colors.amber,
+                                style: BorderStyle.solid,
+                                width: 0.8,
+                              ),
+                              child: Text(
+                                'Detailed View',
+                                style: TextStyle(color: Colors.amberAccent,),
+                              ),
+                            ),
+                            OutlineButton(
+                              onPressed: () => {print('hey')},
+                              borderSide: BorderSide(
+                                color: Colors.lightGreen,
+                                style: BorderStyle.solid,
+                                width: 0.8,
+                              ),
+                              child: Text(
+                                'Modify',
+                                style: TextStyle(color: Colors.lightGreenAccent,),
+                              ),
+                            ),
+                            RaisedButton(
+                              onPressed: () => changeState(null),
+                              color: Colors.blueAccent,
+                              child: Text(
+                                'Back',
+                                style: TextStyle(color: Colors.white,),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(24),
-                child: Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 5),
-                  alignment: Alignment.bottomLeft,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      OutlineButton(
-                        onPressed: () => Navigator.of(context).pushNamed(
-                            '/courses_screen'),
-                        borderSide: BorderSide(
-                          color: Colors.amber,
-                          style: BorderStyle.solid,
-                          width: 0.8,
-                        ),
-                        child: Text(
-                          'Detailed View',
-                          style: TextStyle(color: Colors.amberAccent,),
-                        ),
-                      ),
-                      OutlineButton(
-                        onPressed: () => {print('hey')},
-                        borderSide: BorderSide(
-                          color: Colors.lightGreen,
-                          style: BorderStyle.solid,
-                          width: 0.8,
-                        ),
-                        child: Text(
-                          'Modify',
-                          style: TextStyle(color: Colors.lightGreenAccent,),
-                        ),
-                      ),
-                      RaisedButton(
-                        onPressed: () => changeState(null),
-                        color: Colors.blueAccent,
-                        child: Text(
-                          'Back',
-                          style: TextStyle(color: Colors.white,),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
             ],
           ),
         ),

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
+import 'package:ums_flutter/components/header/page_header.dart';
+import 'package:ums_flutter/components/input/text_form_field_validation.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/models/request/college_request.dart';
@@ -11,7 +13,8 @@ import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/screens/college/add_principal.dart';
 import 'package:ums_flutter/services/college_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/widget/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/validator/validator.dart';
 
 class AddCollegeScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
@@ -28,20 +31,24 @@ class AddCollegeScreen extends StatefulWidget {
 }
 
 class _AddCollegeScreenState extends State<AddCollegeScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-
   final _nameFocus = FocusNode();
   final _codeFocus = FocusNode();
-  final _descriptionFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _emailFocus = FocusNode();
   final _addressFocus = FocusNode();
 
-  _fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
-    currentFocus.unfocus();
-    FocusScope.of(context).requestFocus(nextFocus);
+  CollegeRequest _collegeRequest = CollegeRequest();
+  bool _autoValidate = false;
+
+  _onSubmit(BuildContext context) {
+    if (formKey.currentState.validate()) {
+      _onCreateButtonPressed(context);
+    } else {
+//    If all data are not valid then start auto validation.
+      setState(() {
+        _autoValidate = true;
+      });
+    }
   }
 
   //todo refactor to college response
@@ -134,15 +141,11 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
 
   _onCreateButtonPressed(BuildContext context) {
     BlocProvider.of<CollegeBloc>(context).add(
-      CreateCollegeButtonPressed(
-        collegeRequest: CollegeRequest.create(
-            name: _nameController.text,
-            code: _codeController.text,
-            description: _descriptionController.text,
-            address: _addressController.text),
-      ),
+      CreateCollegeButtonPressed(collegeRequest: _collegeRequest),
     );
   }
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +154,56 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       drawer: widget.sideDrawer,
+      floatingActionButton: new FloatingActionButton.extended(
+        backgroundColor: Colors.green,
+        icon: Icon(Icons.cloud_done),
+        label: Text(
+          'Save',
+          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
+        ),
+        onPressed: () => BlocListener<CollegeBloc, CollegeState>(
+          listener: (BuildContext context, state) {
+            if (state is !CollegeLoading) {
+              if (formKey.currentState.validate()) {
+                _onCreateButtonPressed(context);
+              } else {
+                //    If all data are not valid then start auto validation.
+                setState(
+                  () {
+                    _autoValidate = true;
+                  },
+                );
+              }
+            } else {
+              return null;
+            }
+          },
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        child: new Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.list),
+                color: Colors.white,
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.close),
+              color: Colors.red,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+        color: Color(0xff101010),
+      ),
       body: BlocListener<CollegeBloc, CollegeState>(
         listener: (BuildContext context, state) {
           if (state is CollegeAdded) {
@@ -204,33 +257,8 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
                         ),
                         Positioned(
                           bottom: SizeConfig.blockSizeVertical * 2,
-                          left: 12,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Create',
-                                style: TextStyle(
-                                    fontFamily: 'Oswald',
-                                    fontSize:
-                                        SizeConfig.blockSizeHorizontal * 9,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white),
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Text('College',
-                                      style: TextStyle(
-                                          fontFamily: 'Oswald',
-                                          fontSize:
-                                              SizeConfig.blockSizeHorizontal *
-                                                  10,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFFFD3664))),
-                                ],
-                              )
-                            ],
-                          ), //move to a function
+                          left: 18,
+                          child: PageHeader(line1: "Add",line2: "College", marginBottom: 0,), //move to a function
                         ),
                       ],
                     ),
@@ -238,86 +266,75 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
                   Container(
                     padding: EdgeInsets.all(22),
                     child: Form(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _customTextField(
-                            autofocus: true,
-                            maxLength: 10,
-                            minLength: 3,
-                            labelText: 'College Code',
-                            context: context,
-                            textEditingController: _codeController,
-                            focusNode: _codeFocus,
-                            nextFocusNode: _nameFocus,
-                          ),
-                          SizedBox(height: SizeConfig.blockSizeVertical * 1),
-                          _customTextField(
-                            labelText: 'Name',
-                            maxLength: 100,
-                            minLength: 5,
-                            context: context,
-                            textEditingController: _nameController,
-                            focusNode: _nameFocus,
-                            nextFocusNode: _descriptionFocus,
-                          ),
-                          SizedBox(height: SizeConfig.blockSizeVertical * 1),
-                          _customTextField(
-                            maxLength: 255,
-                            minLength: 10,
-                            labelText: 'Description',
-                            context: context,
-                            textEditingController: _descriptionController,
-                            focusNode: _descriptionFocus,
-                            nextFocusNode: _addressFocus,
-                          ),
-                          SizedBox(height: SizeConfig.blockSizeVertical * 1),
-                          _customTextField(
-                            maxLength: 255,
-                            minLength: 10,
-                            labelText: 'Address',
-                            isLastEntry: true,
-                            context: context,
-                            textEditingController: _addressController,
-                            focusNode: _addressFocus,
-                            nextFocusNode: _addressFocus,
-                          ),
-                          SizedBox(height: SizeConfig.blockSizeVertical * 2),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              OutlineButton(
-                                child: Text(
-                                  "Cancel",
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                  ),
-                                ),
-                                borderSide: BorderSide(
-                                  color: Colors.red,
-                                  style: BorderStyle.solid,
-                                  width: 0.8,
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                              RaisedButton(
-                                onPressed: () =>
-                                    _onCreateButtonPressed(context),
-                                color: Colors.green,
-                                child: Text(
-                                  'Save',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                        autovalidate: _autoValidate,
+                        key: formKey,
+                        child: Column(
+                          children: <Widget>[
+                            TextFormFieldValidation(
+                              hint: "College Code",
+                              initialValue: "MM",
+                              focusNode: _codeFocus,
+                              autofocus: true,
+                              nextFocusNode: _nameFocus,
+                              onValueChanged: (val) {
+                                _collegeRequest.code = val.trim().toUpperCase();
+                              },
+                            ),
+                            TextFormFieldValidation(
+                              hint: "College Name",
+                              initialValue: "MM ",
+                              focusNode: _nameFocus,
+                              nextFocusNode: _phoneFocus,
+                              validator: (String arg) {
+                                if (arg.length < 6)
+                                  return 'Name must be more than 6 character';
+                                else
+                                  return null;
+                              },
+                              onValueChanged: (val) {
+                                _collegeRequest.name = val.trim();
+                              },
+                            ),
+                            TextFormFieldValidation(
+                              hint: "Phone Number",
+                              initialValue: "+91",
+                              focusNode: _phoneFocus,
+                              nextFocusNode: _emailFocus,
+                              textInputFormatter: <TextInputFormatter>[
+                                WhitelistingTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(13)
+                                ],
+                              keyboardType:
+                                  TextInputType.numberWithOptions(signed: true),
+                              validator: Validator.validateMobile,
+                              onValueChanged: (val) {
+                                _collegeRequest.phone = val.trim();
+                              },
+                            ),
+                            TextFormFieldValidation(
+                              hint: "Email Address",
+                              focusNode: _emailFocus,
+                              keyboardType: TextInputType.emailAddress,
+                              nextFocusNode: _addressFocus,
+                              validator: Validator.validateEmail,
+                              onValueChanged: (val) {
+                                _collegeRequest.email = val.trim();
+                              },
+                            ),
+                            TextFormFieldValidation(
+                              hint: "Address",
+                              focusNode: _emailFocus,
+                              keyboardType: TextInputType.multiline,
+                              nextFocusNode: _addressFocus,
+                              onValueChanged: (val) {
+                                _collegeRequest.address = val.trim();
+                              },
+                              isLastEntry: true,
+                              onFormSubmit: _onSubmit,
+                            ),
+                            SizedBox(height: 10),
+                          ],
+                        )),
                   ),
                 ],
               ),
@@ -325,57 +342,6 @@ class _AddCollegeScreenState extends State<AddCollegeScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _customTextField({
-    String labelText,
-    bool autofocus = false,
-    int maxLength = 100,
-    int minLength = 3,
-    BuildContext context,
-    TextEditingController textEditingController,
-    FocusNode focusNode,
-    bool isLastEntry = false,
-    FocusNode nextFocusNode,
-  }) {
-    return TextFormField(
-      cursorColor: Colors.green,
-      maxLength: maxLength,
-      autofocus: autofocus,
-      controller: textEditingController,
-      style: TextStyle(
-        color: Colors.white,
-      ),
-      keyboardType: TextInputType.text,
-      textInputAction: TextInputAction.next,
-      focusNode: focusNode,
-      onFieldSubmitted: !isLastEntry
-          ? (term) => _fieldFocusChange(context, focusNode, nextFocusNode)
-          : (term) {
-              focusNode.unfocus();
-              _onCreateButtonPressed(context);
-            },
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: TextStyle(
-            fontSize: SizeConfig.blockSizeHorizontal * 3.8,
-            fontFamily: 'Montserrat',
-            fontWeight: FontWeight.bold,
-            color: Colors.lightGreenAccent),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color.fromRGBO(112, 112, 112, 1)),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.lightGreenAccent),
-        ),
-      ),
-      autocorrect: true,
-      validator: (String value) {
-        return value.length < minLength
-            ? 'Minimum Length Should be $minLength'
-            : null;
-      },
     );
   }
 }
