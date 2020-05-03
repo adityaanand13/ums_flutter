@@ -14,6 +14,10 @@ class FetchDataException extends CustomException {
       : super(message, "Error During Communication: ");
 }
 
+class NotFoundException extends CustomException {
+  NotFoundException([message]) : super(message, "Not Found: ");
+}
+
 class BadRequestException extends CustomException {
   BadRequestException([message]) : super(message, "Invalid Request: ");
 }
