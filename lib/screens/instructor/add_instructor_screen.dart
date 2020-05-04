@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/instructor_bloc.dart';
-import 'package:ums_flutter/event_state/instructor/instructor_event.dart';
-import 'package:ums_flutter/event_state/instructor/instructor_state.dart';
-import 'package:ums_flutter/models/response/college_response.dart';
+import 'package:ums_flutter/bloc/add_instructor_bloc.dart';
+import 'package:ums_flutter/event_state/add_instructor/add_instructor_event.dart';
+import 'package:ums_flutter/event_state/add_instructor/add_instructor_state.dart';
+import 'package:ums_flutter/models/instructor_model.dart';
 import 'package:ums_flutter/models/user_model.dart';
+import 'package:ums_flutter/screens/college/add_principal.dart';
+import 'package:ums_flutter/screens/instructor/instructor_detail_screen.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/widget/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/Side_drawer.dart';
 
 class AddInstructorScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
 
-  const AddInstructorScreen(
-      {Key key, @required this.sideDrawer})
+  const AddInstructorScreen({Key key, @required this.sideDrawer})
       : assert(sideDrawer != null),
         super(key: key);
 
@@ -56,14 +56,14 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
   final _countryFocus = FocusNode();
   final _dobFocus = FocusNode();
 
-  _fieldFocusChange(BuildContext context, FocusNode currentFocus,
-      FocusNode nextFocus) {
+  _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
     currentFocus.unfocus();
     FocusScope.of(context).requestFocus(nextFocus);
   }
 
   //todo refactor to user response
-  void _showDialog(CollegeResponse collegeResponse) {
+  void _showDialog(InstructorModel newInstructor) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -91,7 +91,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                     padding: EdgeInsets.all(22),
                     child: Center(
                       child: Text(
-                        'College Created',
+                        'Instructor Created',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: SizeConfig.blockSizeHorizontal * 7,
@@ -110,7 +110,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'College Has been created succesfully. press Continue to add principal',
+                          'Instructor has been created succesfully. press Continue to Show details',
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: SizeConfig.blockSizeHorizontal * 3.75,
@@ -125,16 +125,15 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               style: TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
-                              //todo refactor
-//                              Navigator.of(context).push(
-//                                new MaterialPageRoute(
-//                                  builder: (BuildContext context) =>
-//                                  new AddPrincipalScreen(
-//                                    sideDrawer: widget.sideDrawer,
-//                                    collegeResponse: collegeResponse,
-//                                  ),
-//                                ),
-//                              );
+                              Navigator.of(context).push(
+                                new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      new InstructorDetailScreen(
+                                    instructor: newInstructor,
+                                    sideDrawer: widget.sideDrawer,
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         )
@@ -151,25 +150,27 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
   }
 
   _onCreateButtonPressed(BuildContext context) {
-    UserModel newInstructor =  UserModel.add(
-            username: _usernameController.text,
-            firstName: _firstNameController.text,
-            lastName: _lastNameController.text,
-            email: _emailController.text,
-            gender: _genderController.text,
-            phone: _phoneController.text,
-            blood: _bloodController.text,
-            religion: _religionController.text,
-            category: _countryController.text,
-            aadhar: int.parse(_aadharController.text),
-            address: _addressController.text,
-            city: _cityController.text,
-            state: _stateController.text,
-            pinCode: int.parse(_phoneController.text),
-            country: _countryController.text,
-            dob: _dobController.text
-        );
-    BlocProvider.of<InstructorBloc>(context).add(AddInstructor(userModel: newInstructor));
+    InstructorModel newInstructor = InstructorModel.create(
+        username: _usernameController.text,
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        gender: _genderController.text,
+        phone: _phoneController.text,
+        blood: _bloodController.text,
+        religion: _religionController.text,
+        category: _categoryController.text,
+        aadhar: int.parse(_aadharController.text),
+        address: _addressController.text,
+        city: _cityController.text,
+        state: _stateController.text,
+        pinCode: int.parse(_pincodeController.text),
+        country: _countryController.text,
+        userType: "INSTRUCTOR",
+        password: "12345678",
+        DOB: _dobController.text);
+    BlocProvider.of<AddInstructorBloc>(context)
+        .add(AddInstructor(instructor: newInstructor));
   }
 
   @override
@@ -183,33 +184,34 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
       ),
       backgroundColor: Colors.black,
       drawer: widget.sideDrawer,
-      body: BlocListener<InstructorBloc, InstructorState>(
+      body: BlocListener<AddInstructorBloc, AddInstructorState>(
         listener: (BuildContext context, state) {
           if (state is InstructorAdded) {
-//            return _showDialog(state.userModel);
-          } else if (state is InstructorError) {
+            return _showDialog(state.instructor);
+          } else if (state is AddInstructorError) {
             Scaffold.of(context).showSnackBar(
               SnackBar(
                 content: Text('${state.error}'),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 3),
+                duration: Duration(seconds: 6),
               ),
             );
           }
         },
-        child: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Form(
+        child: BlocBuilder(
+          bloc: BlocProvider.of<AddInstructorBloc>(context),
+          builder: (BuildContext context, AddInstructorState state) {
+            return SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(top: 22, bottom: 22),
+                child: Form(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
-                          color: Color.fromRGBO(16, 16, 16, 1),
+                          color: Color.fromRGBO(32, 32, 32, 1),
                         ),
                         padding: EdgeInsets.all(22),
                         child: Column(
@@ -249,6 +251,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               maxLength: 255,
                               minLength: 10,
                               labelText: 'Email',
+                              keyboardType: TextInputType.emailAddress,
                               isLastEntry: true,
                               context: context,
                               textEditingController: _emailController,
@@ -273,7 +276,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
-                          color: Color.fromRGBO(16, 16, 16, 1),
+                          color: Color.fromRGBO(32, 32, 32, 1),
                         ),
                         padding: EdgeInsets.all(22),
                         child: Column(
@@ -283,6 +286,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               maxLength: 10,
                               minLength: 3,
                               labelText: 'Phone',
+                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
                               context: context,
                               textEditingController: _phoneController,
                               focusNode: _phoneFocus,
@@ -315,6 +319,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               labelText: 'Aadhar Number',
                               isLastEntry: true,
                               context: context,
+                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
                               textEditingController: _aadharController,
                               focusNode: _aadharFocus,
                               nextFocusNode: _religionFocus,
@@ -347,7 +352,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(22),
-                          color: Color.fromRGBO(16, 16, 16, 1),
+                          color: Color.fromRGBO(32, 32, 32, 1),
                         ),
                         padding: EdgeInsets.all(22),
                         child: Column(
@@ -388,6 +393,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               minLength: 10,
                               labelText: 'Pincode',
                               isLastEntry: true,
+                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
                               context: context,
                               textEditingController: _pincodeController,
                               focusNode: _pincodeFocus,
@@ -406,43 +412,67 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                           ],
                         ),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          OutlineButton(
-                            child: Text(
-                              "Cancel",
-                              style: TextStyle(
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              style: BorderStyle.solid,
-                              width: 0.8,
-                            ),
-                            onPressed: () => Navigator.of(context).pop(),
+                      SizedBox(height: 22),
+                      Container(
+                        height: 35,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(20.0),
+                          shadowColor: Colors.greenAccent,
+                          color: Colors.green,
+                          elevation: 3.0,
+                          child: GestureDetector(
+                            onTap: state is! AddInstructorLoading
+                                ?  () => _onCreateButtonPressed(context)
+                                : null,
+                            child: state is AddInstructorLoading
+                                ? Container(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      'SUBMIT',
+                                      style: TextStyle(
+                                          fontSize:
+                                              SizeConfig.blockSizeHorizontal *
+                                                  5,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Montserrat'),
+                                    ),
+                                  ),
                           ),
-                          RaisedButton(
-                            onPressed: () => _onCreateButtonPressed(context),
-                            color: Colors.green,
-                            child: Text(
-                              'Save',
-                              style: TextStyle(
-                                color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 11),
+                      Container(
+                        height: 35,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(20.0),
+                          shadowColor: Colors.redAccent,
+                          color: Colors.red,
+                          elevation: 7.0,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(),
+                            child: Center(
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                    fontSize:
+                                        SizeConfig.blockSizeHorizontal * 5,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Montserrat'),
                               ),
                             ),
-                          )
-                        ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -458,6 +488,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
     FocusNode focusNode,
     bool isLastEntry = false,
     FocusNode nextFocusNode,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return TextFormField(
       cursorColor: Colors.green,
@@ -467,22 +498,22 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
       style: TextStyle(
         color: Colors.white,
       ),
-      keyboardType: TextInputType.text,
+      keyboardType: keyboardType,
       textInputAction: TextInputAction.next,
       focusNode: focusNode,
       onFieldSubmitted: !isLastEntry
           ? (term) => _fieldFocusChange(context, focusNode, nextFocusNode)
           : (term) {
-        focusNode.unfocus();
-        _onCreateButtonPressed(context);
-      },
+              focusNode.unfocus();
+              _onCreateButtonPressed(context);
+            },
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(
             fontSize: SizeConfig.blockSizeHorizontal * 3.8,
             fontFamily: 'Montserrat',
             fontWeight: FontWeight.bold,
-            color: Colors.lightGreenAccent),
+            color: Colors.lightGreen),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Color.fromRGBO(112, 112, 112, 1)),
         ),
