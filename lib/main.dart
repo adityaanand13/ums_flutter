@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
+import 'package:ums_flutter/models/response/course_response.dart';
+import 'package:ums_flutter/screens/splash_screen.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'api/college_api.dart';
@@ -60,19 +62,23 @@ void main(){
 //  CollegeApiProvider provider = CollegeApiProvider();
 //  String token = await storage.read(key: "token");
 //  //gets json
-//  var collegesJson = await provider.get("", token);
-//  //var headers = {
-//  // c"Content-Type": "application/json",
-//  //  "Authorization": 'Bearer $token'
-//  //};
+//  var collegeJson = await provider.get("1", token);
 ////  print(collegesJson);
 ////  collegesJson.forEach((college) => print(college));
 ////  print("\n");
 ////  print(collegesJson.runtimeType);
 ////  print(collegesJson[0].runtimeType);
-//  List<CollegeResponse> colleges =  List<CollegeResponse>();
-//  collegesJson.forEach((college) => colleges.add(CollegeResponse.fromJsonMap(college)));
-//  print(colleges.length);
+////  List<CollegeResponse> colleges =  List<CollegeResponse>();
+////  collegesJson.forEach((college) => colleges.add(CollegeResponse.fromJsonMap(college)));
+//CollegeResponse collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
+//print(collegeResponse.name);
+////print(collegeResponse.courses[0].runtimeType);
+////List<CourseResponse> courseResponses = List<CourseResponse>();
+////collegeResponse.courses.forEach((course) => courseResponses.add(CourseResponse.fromJsonMap(course)));
+////CourseResponse courseResponse = CourseResponse.fromJsonMap(collegeResponse.courses[0]);
+//CourseResponse courseResponse = collegeResponse.courses[0];
+//print(courseResponse.name);
+//
 //
 //
 // //var response = await http.get("http://localhost:8080/api/user/", headers: headers);
