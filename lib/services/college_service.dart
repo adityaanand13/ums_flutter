@@ -4,6 +4,7 @@ import 'package:ums_flutter/api/college_api.dart';
 import 'package:ums_flutter/models/request/college_request.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/models/response/college_s_response.dart';
+import 'package:ums_flutter/models/response/course_response.dart';
 
 class CollegeService {
   CollegeApiProvider _provider = CollegeApiProvider();
@@ -12,9 +13,6 @@ class CollegeService {
   Future<CollegesResponse> getCollegeS() async {
     String token = await _storage.read(key: "token");
     var collegesJson = await _provider.get("", token);
-    print(collegesJson.runtimeType);
-    print(collegesJson);
-    print(collegesJson.toString());
     var collegesResponse = CollegesResponse.fromJsonMap(collegesJson);
     return collegesResponse;
   }
@@ -43,6 +41,13 @@ class CollegeService {
   Future<CollegeResponse> createCollege(CollegeRequest collegeRequest) async {
     String token = await _storage.read(key: "token");
     var collegeJson = await _provider.post(collegeRequest.toJson(), "", token);
+    var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
+    return collegeResponse;
+  }
+
+  Future<CollegeResponse> addCourse({int collegeID, CourseResponse courseResponse}) async {
+    String token = await _storage.read(key: "token");
+    var collegeJson = await _provider.post(courseResponse.toJson(), "$collegeID/add-course", token);
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
