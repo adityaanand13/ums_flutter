@@ -4,10 +4,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 import 'package:ums_flutter/exception/CustomException.dart';
+import 'package:ums_flutter/utils/constants.dart';
 
 class AuthApiProvider{
 
-  static const _BASE_URI = "http://localhost:8080/api/auth";
+  static const _BASE_URI = "$BASE_URL/api/auth";
   static const _headers = {"Content-Type": "application/json"};
 
 //api

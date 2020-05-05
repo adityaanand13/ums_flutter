@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' show json;
 
 import 'package:ums_flutter/exception/CustomException.dart';
+import 'package:ums_flutter/utils/constants.dart';
 
 class UserApiProvider{
-  static const _BASE_URI = "http://localhost:8080/api/user";
+  static const _BASE_URL = "$BASE_URL/api/user";
 
   Future<dynamic>  getUser(String route, String token) async{
     var responseJson;
@@ -19,7 +20,7 @@ class UserApiProvider{
       "Authorization": 'Bearer $token'
     };
     try{
-      var response = await http.get("$_BASE_URI/$route", headers: headers);
+      var response = await http.get("$_BASE_URL/$route", headers: headers);
       responseJson = _response(response);
     }on SocketException {
       throw FetchDataException('No Internet connection');
@@ -35,7 +36,7 @@ class UserApiProvider{
       "Authorization": 'Bearer $token'
     };
     try{
-      final response = await http.post("$_BASE_URI/$route", headers: headers, body: body);
+      final response = await http.post("$_BASE_URL/$route", headers: headers, body: body);
       responseJson = _response(response);
     }on SocketException {
       throw FetchDataException('No Internet connection');
@@ -51,7 +52,7 @@ class UserApiProvider{
       "Authorization": 'Bearer $token'
     };
     try{
-      final response = await http.post("$_BASE_URI/$route", headers: headers, body: body);
+      final response = await http.post("$_BASE_URL/$route", headers: headers, body: body);
       responseJson = _response(response);
     }on SocketException {
       throw FetchDataException('No Internet connection');

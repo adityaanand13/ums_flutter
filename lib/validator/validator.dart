@@ -1,29 +1,19 @@
-import 'dart:async';
+class Validator {
+  static String validateMobile(String value) {
+// Indian Mobile number are of 10 digit only
+    if (value.length < 10)
+      return 'Mobile Number must be of 10 digit';
+    else
+      return null;
+  }
 
-mixin Validators {
-  var passwordValidator = StreamTransformer<String, String>.fromHandlers(
-      handleData: (password, sink) {
-    if (password.length > 4) {
-      sink.add(password);
-    } else {
-      sink.addError("Password length should be greater than 4 chars.");
-    }
-  });
-  var usernameOrEmailValidator = StreamTransformer<String, String>.fromHandlers(
-      handleData: (password, sink) {
-    if (password.length > 6) {
-      sink.add(password);
-    } else {
-      sink.addError("username length should be greater than 6 chars.");
-    }
-  });
-  final authCheck =
-  StreamTransformer<bool, bool>.fromHandlers(handleData: (auth, sink) {
-    if (auth == true) {
-      sink.add(true);
-    } else {
-      sink.add(false);
-      sink.addError('Must be Authenticated');
-    }
-  });
+  static String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Enter Valid Email';
+    else
+      return null;
+  }
 }
