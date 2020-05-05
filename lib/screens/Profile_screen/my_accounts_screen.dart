@@ -5,7 +5,7 @@ import 'package:ums_flutter/event_state/user/user_event.dart';
 import 'package:ums_flutter/event_state/user/user_state.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/widget/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/Side_drawer.dart';
 
 import 'profile_page_view.dart';
 
