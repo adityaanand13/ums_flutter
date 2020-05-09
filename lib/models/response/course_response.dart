@@ -1,4 +1,3 @@
-
 import 'package:ums_flutter/models/response/batch_response.dart';
 
 class CourseResponse {
@@ -9,18 +8,16 @@ class CourseResponse {
   String description;
   int duration;
   int semesterPerYear;
-  List<BatchResponse> batches = List<BatchResponse>();
+  List<BatchResponse> batches;
 
-	CourseResponse.fromJsonMap(Map<String, dynamic> map){
-		id = map["id"];
-		name = map["name"];
-		code = map["code"];
-		description = map["description"];
-		duration = map["duration"];
-		semesterPerYear = map["semesterPerYear"];
-		map["batches"].forEach((batch) => batches.add(BatchResponse.fromJsonMap(batch)));
-	}
-
+	CourseResponse.fromJsonMap(Map<String, dynamic> map):
+		id = map["id"],
+		name = map["name"],
+		code = map["code"],
+		description = map["description"],
+		duration = map["duration"],
+		semesterPerYear = map["semesterPerYear"],
+		batches = List<BatchResponse>.from(map["batches"].map((it) => BatchResponse.fromJsonMap(it)));
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -30,7 +27,9 @@ class CourseResponse {
 		data['description'] = description;
 		data['duration'] = duration;
 		data['semesterPerYear'] = semesterPerYear;
-		data['batches'] = batches;
+		data['batches'] = batches != null ? 
+			this.batches.map((v) => v.toJson()).toList()
+			: null;
 		return data;
 	}
 }

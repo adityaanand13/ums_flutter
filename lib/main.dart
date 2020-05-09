@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
-import 'package:ums_flutter/screens/splash_screen.dart';
 import 'package:ums_flutter/services/auth_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
-import 'api/college_api.dart';
 import 'app.dart';
-import 'package:http/http.dart' as http;
 
-import 'models/response/college_response.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override

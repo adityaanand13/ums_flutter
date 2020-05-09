@@ -21,6 +21,7 @@ class AddCourseScreen extends StatefulWidget {
   const AddCourseScreen(
       {Key key, @required this.sideDrawer, @required this.collegeID})
       : assert(sideDrawer != null),
+        assert(collegeID != null),
         super(key: key);
 
   @override
@@ -110,7 +111,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                                 "Continue",
                                 style: TextStyle(color: Colors.white),
                               ),
-                              onPressed: () {}),
+                              onPressed: () {Navigator.of(context).pop();}),
                         )
                       ],
                     ),

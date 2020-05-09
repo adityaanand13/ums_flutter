@@ -9,6 +9,8 @@ import 'package:ums_flutter/event_state/course/course_state.dart';
 import 'package:ums_flutter/models/response/batch_response.dart';
 import 'package:ums_flutter/models/response/course_response.dart';
 import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/screens/batch/add_batch_screen.dart';
+import 'package:ums_flutter/screens/batch/detailed_batch_screen.dart';
 import 'package:ums_flutter/screens/courses/add_course_screen.dart';
 
 class DetailedCourseScreen extends StatelessWidget {
@@ -45,16 +47,16 @@ class DetailedCourseScreen extends StatelessWidget {
           'Add Batch',
           style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
         ),
-        onPressed: (){},
-//            () {
-//          Navigator.of(context).push(
-//            new MaterialPageRoute(
-//                builder: (BuildContext context) => new AddCourseScreen(
-//                      sideDrawer: sideDrawer,
-//                    ),
-//            ),
-//          );
-//        },
+        onPressed: () {
+          Navigator.of(context).push(
+            new MaterialPageRoute(
+              builder: (BuildContext context) => new AddBatchScreen(
+                sideDrawer: sideDrawer,
+                courseID: _courseResponse.id,
+              ),
+            ),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
@@ -81,9 +83,9 @@ class DetailedCourseScreen extends StatelessWidget {
         color: Color(0xff101010),
       ),
       body: SafeArea(
-        child: BlocListener<CollegeBloc, CollegeState>(
+        child: BlocListener<CourseBloc, CourseState>(
           listener: (BuildContext context, state) {
-            if (state is CollegeError) {
+            if (state is CourseError) {
               Scaffold.of(context).showSnackBar(
                 SnackBar(
                   content: Text('${state.error}'),
@@ -137,7 +139,7 @@ class DetailedCourseScreen extends StatelessWidget {
                           return _dataAbsent(_courseResponse, rWidth);
                         } else {
                           _courseResponse = state.courseResponse;
-                          return _dataPresent(_courseResponse, rWidth);
+                          return _dataPresent(_courseResponse, rWidth, context);
                         }
                       } else {
                         BlocProvider.of<CourseBloc>(context)
@@ -155,7 +157,7 @@ class DetailedCourseScreen extends StatelessWidget {
     );
   }
 
-  Widget _dataPresent(CourseResponse courseResponse, double rWidth) {
+  Widget _dataPresent(CourseResponse courseResponse, double rWidth, BuildContext context) {
     return Column(
       children: <Widget>[
         _cardView(courseResponse, rWidth),
@@ -175,7 +177,7 @@ class DetailedCourseScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            _courseList(courseResponse, rWidth),
+            _batchList(courseResponse, rWidth, context),
             SizedBox(
               height: 10,
             ),
@@ -301,7 +303,7 @@ class DetailedCourseScreen extends StatelessWidget {
     );
   }
 
-  Widget _courseList(CourseResponse courseResponse, double rWidth) {
+  Widget _batchList(CourseResponse courseResponse, double rWidth, BuildContext context) {
     List<BatchResponse> batches = courseResponse.batches;
     List<Widget> list = new List<Widget>();
     if (batches.isEmpty) {
@@ -320,8 +322,21 @@ class DetailedCourseScreen extends StatelessWidget {
       for (var batch in batches) {
         list.add(
           GestureDetector(
-            onTap: null,
+            onTap: () {
+              Navigator.of(context).push(
+                new MaterialPageRoute(
+                  builder: (BuildContext context) => new DetailedBatchScreen(
+                    sideDrawer: sideDrawer,
+                    index: batch.id,
+                    collegeName: collegeName,
+                    collegeCode: collegeCode,
+                    courseResponse: courseResponse,
+                  ),
+                ),
+              );
+            },
             child: Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Color(0xFF0D0D0D),
@@ -330,32 +345,17 @@ class DetailedCourseScreen extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(10.0),
               ),
-              padding: EdgeInsets.all(10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "${batch.name}",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFFFD3664)),
-                    ),
-                    Text(
-                      "${batch.description}",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+              padding: EdgeInsets.all(12),
+              child: Text(
+                "${batch.name}",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white),
+              ),
             ),
           ),
         );
-        list.add(SizedBox(height: 10));
       }
     }
     return Column(children: list);

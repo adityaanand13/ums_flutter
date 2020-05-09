@@ -3,24 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/add_instructor_bloc.dart';
 import 'package:ums_flutter/bloc/add_princiapal_bloc.dart';
 import 'package:ums_flutter/bloc/authentication_bloc.dart';
-import 'package:ums_flutter/bloc/colleges_bloc.dart';
+import 'package:ums_flutter/bloc/colleges/bloc.dart';
 import 'package:ums_flutter/bloc/course_bloc.dart';
 import 'package:ums_flutter/event_state/authentication/authentication_state.dart';
 import 'package:ums_flutter/screens/Profile_screen/my_accounts_screen.dart';
 import 'package:ums_flutter/screens/college/colleges_screen.dart';
-import 'package:ums_flutter/screens/courses/add_course_screen.dart';
 import 'package:ums_flutter/screens/home.dart';
-import 'package:ums_flutter/screens/instructor/add_instructor_screen.dart';
 import 'package:ums_flutter/screens/login_screen/login_screen.dart';
 import 'package:ums_flutter/screens/splash_screen.dart';
 import 'package:ums_flutter/screens/college/add_college_screen.dart';
 import 'package:ums_flutter/services/auth_service.dart';
+import 'package:ums_flutter/services/batch_service.dart';
 import 'package:ums_flutter/services/course_service.dart';
 import 'package:ums_flutter/services/instructor_service.dart';
 import 'package:ums_flutter/services/user_service.dart';
 import 'package:ums_flutter/utils/theme.dart';
 import 'package:ums_flutter/components/drawer/Side_drawer.dart';
 
+import 'bloc/batch_bloc.dart';
 import 'bloc/college_bloc.dart';
 import 'bloc/user_bloc.dart';
 import 'services/college_service.dart';
@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
   final CollegeService _collegeService = CollegeService();
   final InstructorService _instructorService = InstructorService();
   final CourseService _courseService = CourseService();
+  final BatchService _batchService = BatchService();
 
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider<CollegesBloc>(
-          create: (context) => CollegesBloc(collegeService: _collegeService),
+          create: (context) => CollegesBloc(collegeService: _collegeService)..add(CollegesLoaded()),
         ),
         BlocProvider<CollegeBloc>(
           create: (context) => CollegeBloc(collegeService: _collegeService),
@@ -66,6 +67,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<CourseBloc>(
           create: (context) =>
               CourseBloc(courseService: _courseService),
+        ),
+        BlocProvider<BatchBloc>(
+          create: (context) =>
+              BatchBloc(batchService: _batchService),
         ),
       ],
       child: MaterialApp(

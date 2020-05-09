@@ -45,8 +45,7 @@ class LoginScreen extends StatelessWidget {
                             child: Text(
                                 'Welcome To',
                                 style: TextStyle(
-                                    fontSize: SizeConfig.blockSizeHorizontal *
-                                        9.5,
+                                    fontSize: 30,
                                     fontWeight: FontWeight.bold)
                             ),
                           ),
@@ -62,8 +61,7 @@ class LoginScreen extends StatelessWidget {
                               children: <Widget>[
                                 Text('UMS Portal',
                                     style: TextStyle(
-                                        fontSize: SizeConfig
-                                            .blockSizeHorizontal * 15,
+                                        fontSize: 50,
                                         fontWeight: FontWeight.bold)
                                 ),
                                 Text('.',

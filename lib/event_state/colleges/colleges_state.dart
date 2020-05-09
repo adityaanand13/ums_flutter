@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:ums_flutter/models/response/college_s_response.dart';
+import 'package:ums_flutter/models/response/colleges_response.dart';
 
 abstract class CollegesState extends Equatable {
   const CollegesState();

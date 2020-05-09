@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/models/response/college_s_response.dart';
+import 'package:ums_flutter/models/response/colleges_response.dart';
 import 'package:ums_flutter/services/college_service.dart';
 
 //todo refactor after CUD

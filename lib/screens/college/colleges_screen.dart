@@ -1,15 +1,14 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/college_bloc.dart';
-import 'package:ums_flutter/bloc/colleges_bloc.dart';
-import 'package:ums_flutter/event_state/college/college_state.dart';
-import 'package:ums_flutter/event_state/colleges/colleges_event.dart';
-import 'package:ums_flutter/event_state/colleges/colleges_state.dart';
+import 'package:ums_flutter/bloc/colleges/bloc.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/models/response/college_s_response.dart';
-import 'package:ums_flutter/screens/college/single_college_view.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
 import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+
+import 'detailed_college_screen.dart';
 
 class CollegesScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
@@ -23,9 +22,7 @@ class CollegesScreen extends StatefulWidget {
 }
 
 class _CollegesScreenState extends State<CollegesScreen> {
-  void _refresh(BuildContext context) {
-    BlocProvider.of<CollegesBloc>(context).add(GetCollegeS());
-  }
+  bool show;
 
   changeState(CollegeResponse collegeResponse) {
     setState(() {
@@ -33,8 +30,11 @@ class _CollegesScreenState extends State<CollegesScreen> {
     });
   }
 
-  bool show = false;
-  CollegeResponse collegeResponse = null;
+  @override
+  void initState() {
+    super.initState();
+    show = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +42,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       drawer: widget.sideDrawer,
+      //todo when usertype == admin
       floatingActionButton: !show
           ? new FloatingActionButton.extended(
               backgroundColor: Color(0xFFFD3664),
@@ -56,7 +57,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
               onPressed: () {
                 Navigator.of(context).pushNamed('/AddCollegeScreen');
               },
-      )
+            )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
@@ -82,6 +83,7 @@ class _CollegesScreenState extends State<CollegesScreen> {
         ),
         color: Color(0xff101010),
       ),
+      //todo refactor stack with bottom navigation sheet
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -159,9 +161,9 @@ class _CollegesScreenState extends State<CollegesScreen> {
                     ],
                   ),
                 ),
-                BlocListener<CollegesBloc, CollegesState>(
+                BlocConsumer<CollegesBloc, CollegesState>(
                   listener: (context, state) {
-                    if (state is CollegesError) {
+                    if (state is CollegesLoadError) {
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text('${state.error}'),
@@ -171,32 +173,24 @@ class _CollegesScreenState extends State<CollegesScreen> {
                       );
                     }
                   },
-                  child: BlocBuilder<CollegesBloc, CollegesState>(
-                    builder: (context, state) {
-                      if (state is CollegesPresent) {
-                        return Container(
-                          padding: EdgeInsets.all(18),
-                          child: Column(
-                              children: _collegesList(
-                                  state.collegesResponse, context)),
-                        );
-                      } else if (state is CollegesAbsent) {
-                        BlocProvider.of<CollegesBloc>(context)
-                            .add(GetCollegeS());
-                        return Center(
-                            child: Container(
-                          width: 0.0,
-                          height: 0.0,
-                        ));
-                      } else if (state is CollegesLoading) {
-                        return Center(
-                          child: LinearProgressIndicator(),
-                        );
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  ),
+                  builder: (context, state) {
+                    if (state is CollegesLoadSuccess) {
+                      return Container(
+                        padding: EdgeInsets.all(18),
+                        child: Column(
+                            children:
+                                _collegesList(state.collegesResponse, context)),
+                      );
+                    } else if (state is CollegesLoadInProgress) {
+                      return LinearProgressIndicator(backgroundColor: Colors.black.withRed(50),
+                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),);
+                    } else {
+                      return Container(
+                        height: 0,
+                        width: 0,
+                      );
+                    }
+                  },
                 ),
                 SizedBox(
                   height: SizeConfig.blockSizeVertical * 8,
@@ -204,16 +198,6 @@ class _CollegesScreenState extends State<CollegesScreen> {
               ],
             ),
           ),
-          show
-              ? CollegeView(
-                  collegeResponse: collegeResponse,
-                  changeState: changeState,
-                  sideDrawer: widget.sideDrawer,
-                )
-              : Container(
-                  height: 0,
-                  width: 0,
-                ),
         ],
       ),
     );
@@ -221,15 +205,20 @@ class _CollegesScreenState extends State<CollegesScreen> {
 
   //todo refactor content display
   List<Widget> _collegesList(
-      CollegesResponse collegesResponse, BuildContext context) {
+      List<CollegeResponse> collegesResponse, BuildContext context) {
     List<Widget> list = new List<Widget>();
-    for (var college in collegesResponse.colleges) {
+    for (var college in collegesResponse) {
       list.add(
         GestureDetector(
-          onTap: () {
-            collegeResponse = college;
-            changeState(college);
+          onVerticalDragEnd: (val) {
+            BlocProvider.of<CollegesBloc>(context).add(CollegesUpdated());
           },
+          onTap: () =>
+              Navigator.of(context).push(
+                new CupertinoPageRoute(
+                    builder: (BuildContext context) =>
+                    new DetailedCollegeScreen(sideDrawer:widget.sideDrawer, collegeResponse: college,)
+                ),),
           child: Column(
             children: <Widget>[
               Container(

@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ums_flutter/bloc/college_bloc.dart';
+import 'package:ums_flutter/bloc/colleges/bloc.dart';
 import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/event_state/college/college_state.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
@@ -25,7 +27,6 @@ class DetailedCollegeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rWidth = MediaQuery.of(context).size.width - 18 * 2;
-    CollegeResponse _collegeResponse = collegeResponse;
     return Scaffold(
       drawer: sideDrawer,
       backgroundColor: Colors.black,
@@ -38,7 +39,7 @@ class DetailedCollegeScreen extends StatelessWidget {
         ),
         onPressed: () {
           Navigator.of(context).push(
-            new MaterialPageRoute(
+            new CupertinoPageRoute(
               builder: (BuildContext context) => new AddCourseScreen(
                 sideDrawer: sideDrawer,
                 collegeID: collegeResponse.id,
@@ -72,149 +73,48 @@ class DetailedCollegeScreen extends StatelessWidget {
         color: Color(0xff101010),
       ),
       body: SafeArea(
-        child: BlocListener<CollegeBloc, CollegeState>(
-          listener: (BuildContext context, state) {
-            if (state is CollegeError) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${state.error}'),
-                  backgroundColor: Colors.red,
-                  duration: Duration(seconds: 3),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Maharishi  Markandeshwar',
+                      style: TextStyle(
+                          letterSpacing: 1,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFFD3664)),
+                    ),
+                    SizedBox(height: 10.0),
+                    Text(
+                      'Deemed to be University',
+                      style: TextStyle(
+                          letterSpacing: 2,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                    SizedBox(height: 5),
+                    Divider(
+                      thickness: 1,
+                      color: Color(0xCCFD3664),
+                    ),
+                    SizedBox(height: 20),
+                  ],
                 ),
-              );
-            }
-          },
-          child: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Maharishi  Markandeshwar',
-                        style: TextStyle(
-                            letterSpacing: 1,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFFD3664)),
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        'Deemed to be University',
-                        style: TextStyle(
-                            letterSpacing: 2,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      SizedBox(height: 5),
-                      Divider(
-                        thickness: 1,
-                        color: Color(0xCCFD3664),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                  BlocBuilder<CollegeBloc, CollegeState>(
-                    builder: (context, state) {
-                      if (state is CollegeLoading) {
-                        return _dataAbsent(collegeResponse, rWidth);
-                      } else if (state is CollegeAdded) {
-                        if (_collegeResponse.id != state.collegeResponse.id) {
-                          BlocProvider.of<CollegeBloc>(context)
-                              .add(GetCollege(id: collegeResponse.id));
-                          return Column(
-                            children: <Widget>[
-                              SizedBox(height: 10),
-                              Center(child: CircularProgressIndicator()),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          );
-                        } else {
-                          _collegeResponse = state.collegeResponse;
-                          return _dataPresent(
-                              _collegeResponse, rWidth, context);
-                        }
-                      } else {
-                        BlocProvider.of<CollegeBloc>(context)
-                            .add(GetCollege(id: collegeResponse.id));
-                        return _dataAbsent(collegeResponse, rWidth);
-                      }
-                    },
-                  ),
-                ],
-              ),
+                _cardView(collegeResponse, rWidth),
+                _courseView(collegeResponse, rWidth, context),
+              ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _dataPresent(
-      CollegeResponse collegeResponse, double rWidth, BuildContext context) {
-    return Column(
-      children: <Widget>[
-        _cardView(collegeResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'COURSES',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            _courseList(collegeResponse, rWidth, context),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _dataAbsent(CollegeResponse collegeResponse, double rWidth) {
-    return Column(
-      children: <Widget>[
-        _cardView(collegeResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'COURSES',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(child: CircularProgressIndicator()),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        )
-      ],
     );
   }
 
@@ -418,6 +318,86 @@ class DetailedCollegeScreen extends StatelessWidget {
     );
   }
 
+  Widget _courseView(
+      CollegeResponse collegeResponse, double rWidth, BuildContext context) {
+    return BlocBuilder<CollegesBloc, CollegesState>(
+      builder: (BuildContext context, CollegesState state) {
+        if (state is CollegesLoadSuccess) {
+          if (collegeResponse.courses == null) {
+            BlocProvider.of<CollegesBloc>(context)
+                .add(CollegeFetch(collegeResponse));
+            return Column(
+              children: [
+                Center(
+                  child: Text(
+                    "Loading Courses.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                CircularProgressIndicator(
+                  semanticsLabel: "Loading Course",
+                  backgroundColor: Colors.black.withRed(50),
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                ),
+              ],
+            );
+          } else {
+            return Column(
+              children: <Widget>[
+                SizedBox(height: 8),
+                Center(
+                  child: Container(
+                    height: 36,
+                    child: Text(
+                      'COURSES',
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFFFD3664)),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                _courseList(collegeResponse, rWidth, context),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            );
+          }
+        } else {
+          return Column(
+            children: [
+              Center(
+                child: Text(
+                  "Loading Courses.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              CircularProgressIndicator(
+                semanticsLabel: "Loading Course",
+                backgroundColor: Colors.black.withRed(50),
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
   Widget _courseList(
       CollegeResponse collegeResponse, double rWidth, BuildContext context) {
     List<CourseResponse> courses = collegeResponse.courses;
@@ -439,7 +419,7 @@ class DetailedCollegeScreen extends StatelessWidget {
         list.add(GestureDetector(
           onTap: () {
             Navigator.of(context).push(
-              new MaterialPageRoute(
+              new CupertinoPageRoute(
                 builder: (BuildContext context) => new DetailedCourseScreen(
                   sideDrawer: sideDrawer,
                   collegeId: collegeResponse.id,
@@ -502,7 +482,7 @@ class DetailedCollegeScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
-                      Text('Batches: \$\$',
+                      Text('Batches: ${course.batches.length}',
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: 'Courier',

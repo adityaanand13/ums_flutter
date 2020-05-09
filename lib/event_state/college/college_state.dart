@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:ums_flutter/models/request/college_request.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 abstract class CollegeState extends Equatable {
   const CollegeState([List props = const []]) : super();

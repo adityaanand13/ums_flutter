@@ -71,7 +71,6 @@ class CollegeApiProvider{
         var responseJson = json.decode(response.body)['error'];
         throw BadRequestException(responseJson);
       case 404:
-        print(response.body);
         var responseJson = json.decode(response.body)['error'];
         throw NotFoundException(responseJson);
       case 401:
@@ -80,7 +79,6 @@ class CollegeApiProvider{
         throw UnauthorisedException(responseJson);
       case 500:
       default:
-        print(response.body);
         throw FetchDataException(
             'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
     }
