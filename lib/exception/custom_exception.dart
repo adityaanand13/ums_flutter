@@ -26,6 +26,10 @@ class UnauthorisedException extends CustomException {
   UnauthorisedException([message]) : super(message, "Unauthorised: ");
 }
 
+class ConflictException extends CustomException {
+  ConflictException([message]): super(message, "Conflict in request");
+}
+
 class InvalidInputException extends CustomException {
   InvalidInputException([String message]) : super(message, "Invalid Input: ");
 }
