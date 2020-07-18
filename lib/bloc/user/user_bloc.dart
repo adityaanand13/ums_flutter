@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:ums_flutter/event_state/user/user_event.dart';
-import 'package:ums_flutter/event_state/user/user_state.dart';
-import 'package:ums_flutter/models/user_model.dart';
-import 'package:ums_flutter/services/user_service.dart';
+import 'package:meta/meta.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/services/services.dart';
+import './bloc.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserService userService;

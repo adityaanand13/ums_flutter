@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 
 abstract class CollegesState extends Equatable {
@@ -8,15 +9,12 @@ abstract class CollegesState extends Equatable {
   List<Object> get props => [];
 }
 
-class CollegesLoadInProgress extends CollegesState {
-  @override
-  List<Object> get props => [];
-}
+class CollegesLoadInProgress extends CollegesState {}
 
 class CollegesLoadSuccess extends CollegesState {
   final List<CollegeResponse> collegesResponse;
 
-  const CollegesLoadSuccess(this.collegesResponse);
+  const CollegesLoadSuccess({@required this.collegesResponse});
 
   @override
   List<Object> get props => [collegesResponse];

@@ -1,16 +1,11 @@
 import 'dart:async';
-
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
-import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
-import 'package:ums_flutter/event_state/login/login_event.dart';
-import 'package:ums_flutter/event_state/login/login_state.dart';
-import 'package:ums_flutter/models/response/login_response.dart';
-import 'package:ums_flutter/services/auth_service.dart';
-import 'package:ums_flutter/services/user_service.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/services/services.dart';
 
-import 'authentication_bloc.dart';
-
+import '../bloc.dart';
+import './bloc.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthService authService;
@@ -38,7 +33,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
         await authService.persistToken(token.accessToken);
         userService.persistUser(await userService.fetchUser());
-        authenticationBloc.add(LoggedIn());
+        authenticationBloc.add(AuthenticationEvent.LoggedIn);
         yield LoginInitial();
       } catch (error) {
         yield LoginFailure(error: error.toString());

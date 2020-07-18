@@ -1,3 +1,3 @@
-export 'bacth_bloc.dart';
-export 'bacth_event.dart';
-export 'bacth_state.dart';
+export 'batch_bloc.dart';
+export 'batch_event.dart';
+export 'batch_state.dart';
