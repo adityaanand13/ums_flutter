@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/user_bloc.dart';
-import 'package:ums_flutter/event_state/user/user_event.dart';
-import 'package:ums_flutter/event_state/user/user_state.dart';
-import 'package:ums_flutter/services/user_service.dart';
-import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/services/services.dart';
+import 'package:ums_flutter/utils/utils.dart';
+import 'package:ums_flutter/components/components.dart';
 
 import 'profile_page_view.dart';
 
@@ -91,6 +90,7 @@ class _MyAccountsScreenState extends State<MyAccountsScreen>
               onVerticalDragUpdate: _handelVerticalUpdate,
               onVerticalDragEnd: _handleVerticalEnd,
               onTap: () {
+                HapticFeedback.lightImpact();
                 onBottomPartTap();
               },
               child: Stack(

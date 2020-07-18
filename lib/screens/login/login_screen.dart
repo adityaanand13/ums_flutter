@@ -1,10 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/authentication_bloc.dart';
-import 'package:ums_flutter/bloc/login_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:ums_flutter/services/auth_service.dart';
-import 'package:ums_flutter/services/user_service.dart';
-import 'package:ums_flutter/utils/sizeConfig.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/services/services.dart';
+import 'package:ums_flutter/utils/utils.dart';
 
 import 'login_form.dart';
 
@@ -98,6 +97,7 @@ class LoginScreen extends StatelessWidget {
                         SizedBox(width: 5.0),
                         InkWell(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             Navigator.of(context).pushReplacementNamed(
                                 '/signup');
                           },

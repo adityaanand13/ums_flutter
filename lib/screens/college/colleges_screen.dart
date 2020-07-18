@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/colleges/bloc.dart';
-import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/components/components.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/screens/screens.dart';
 
 import 'detailed_college_screen.dart';
 
@@ -22,183 +23,104 @@ class CollegesScreen extends StatefulWidget {
 }
 
 class _CollegesScreenState extends State<CollegesScreen> {
-  bool show;
-
-  changeState(CollegeResponse collegeResponse) {
-    setState(() {
-      show = !show;
-    });
-  }
+  Completer<void> _refreshCompleter;
 
   @override
   void initState() {
     super.initState();
-    show = false;
+    _refreshCompleter = Completer<void>();
   }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
     return Scaffold(
       backgroundColor: Colors.black,
       drawer: widget.sideDrawer,
-      //todo when usertype == admin
-      floatingActionButton: !show
-          ? new FloatingActionButton.extended(
-              backgroundColor: Color(0xFFFD3664),
-              icon: Icon(Icons.add),
-              label: Text(
-                'Add College',
-                style: TextStyle(
-                    fontFamily: 'Oswald',
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white),
-              ),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/AddCollegeScreen');
-              },
-            )
-          : null,
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          Navigator.of(context).push(
+            new CupertinoPageRoute(
+              builder: (BuildContext context) =>
+                  new AddEditCollegeScreen(sideDrawer: widget.sideDrawer),
+            ),
+          );
+        },
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        label: 'Add College',
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
-                color: Colors.white,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
+      bottomNavigationBar: CustomBottomNavigationBar(),
+      body: RefreshIndicator(
+        color: Colors.red,
+        backgroundColor: Color.fromARGB(254, 54, 54, 54),
+        onRefresh: () {
+          BlocProvider.of<CollegesBloc>(context)..add(CollegesUpdated());
+          return _refreshCompleter.future;
+        },
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ImagedHeader(
+                  header1: "Colleges", header2: "MMDU", header3: "Mullana"),
+              BlocConsumer<CollegesBloc, CollegesState>(
+                listener: (context, state) {
+                  if (state is CollegesLoadSuccess) {
+                    _refreshCompleter?.complete();
+                    _refreshCompleter = Completer();
+                  } else if (state is CollegesLoadError) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${state.error}'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is CollegesLoadSuccess) {
+                    return Container(
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      child: state.collegesResponse.length != 0
+                          ? Column(
+                              children: _collegesList(
+                                  state.collegesResponse, context),
+                            )
+                          : Center(
+                              child: Text(
+                                "No College has been added...!\nPlease add a new College.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white38,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                    );
+                  } else if (state is CollegesLoadInProgress) {
+                    return LinearProgressIndicator(
+                      backgroundColor: Colors.black.withRed(50),
+                      valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                    );
+                  } else {
+                    return Container(
+                      height: 0,
+                      width: 0,
+                    );
+                  }
                 },
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {},
-            ),
-          ],
-        ),
-        color: Color(0xff101010),
-      ),
-      //todo refactor stack with bottom navigation sheet
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  height: SizeConfig.blockSizeVertical * 45,
-                  width: SizeConfig.screenWidth,
-                  child: Stack(
-                    children: <Widget>[
-                      ShaderMask(
-                        shaderCallback: (rect) {
-                          return LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [Colors.black, Colors.transparent])
-                              .createShader(
-                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
-                        },
-                        blendMode: BlendMode.dstIn,
-                        //todo change image
-                        child: Image.asset('images/university.jpg',
-                            alignment: Alignment.topCenter,
-                            width: SizeConfig.screenWidth,
-                            height: SizeConfig.blockSizeVertical * 45,
-                            fit: BoxFit.fill),
-                      ),
-                      Positioned(
-                        bottom: SizeConfig.blockSizeVertical * 2,
-                        left: 12,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Colleges',
-                              style: TextStyle(
-                                  fontFamily: 'Oswald',
-                                  fontSize: SizeConfig.blockSizeHorizontal * 9,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white),
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Text('MMDU',
-                                    style: TextStyle(
-                                        fontFamily: 'Oswald',
-                                        fontSize:
-                                            SizeConfig.blockSizeHorizontal * 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFFFD3664))),
-                                Text(',',
-                                    style: TextStyle(
-                                        fontFamily: 'Oswald',
-                                        fontSize:
-                                            SizeConfig.blockSizeHorizontal * 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white)),
-                                SizedBox(width: 10.0),
-                                Text(
-                                  'Mullana',
-                                  style: TextStyle(
-                                      fontFamily: 'Oswald',
-                                      fontSize:
-                                          SizeConfig.blockSizeHorizontal * 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            )
-                          ],
-                        ), //move to a function
-                      ),
-                    ],
-                  ),
-                ),
-                BlocConsumer<CollegesBloc, CollegesState>(
-                  listener: (context, state) {
-                    if (state is CollegesLoadError) {
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${state.error}'),
-                          backgroundColor: Colors.red,
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is CollegesLoadSuccess) {
-                      return Container(
-                        padding: EdgeInsets.all(18),
-                        child: Column(
-                            children:
-                                _collegesList(state.collegesResponse, context)),
-                      );
-                    } else if (state is CollegesLoadInProgress) {
-                      return LinearProgressIndicator(backgroundColor: Colors.black.withRed(50),
-                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),);
-                    } else {
-                      return Container(
-                        height: 0,
-                        width: 0,
-                      );
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: SizeConfig.blockSizeVertical * 8,
-                ),
-              ],
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -209,53 +131,20 @@ class _CollegesScreenState extends State<CollegesScreen> {
     List<Widget> list = new List<Widget>();
     for (var college in collegesResponse) {
       list.add(
-        GestureDetector(
-          onVerticalDragEnd: (val) {
-            BlocProvider.of<CollegesBloc>(context).add(CollegesUpdated());
-          },
-          onTap: () =>
-              Navigator.of(context).push(
-                new CupertinoPageRoute(
-                    builder: (BuildContext context) =>
-                    new DetailedCollegeScreen(sideDrawer:widget.sideDrawer, collegeResponse: college,)
-                ),),
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Color(0xFF0D0D0D),
-                  border: Border.all(
-                    color: Colors.white24,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "${college.code}",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFFFD3664)),
-                    ),
-                    Text(
-                      "${college.name}",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+        OneColumnCard(
+          header: college.code,
+          label: college.name,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).push(
+              new CupertinoPageRoute(
+                builder: (BuildContext context) => new DetailedCollegeScreen(
+                  sideDrawer: widget.sideDrawer,
+                  collegeResponse: college,
                 ),
               ),
-              SizedBox(height: 10)
-            ],
-          ),
+            );
+          },
         ),
       );
     }

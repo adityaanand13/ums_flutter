@@ -1,0 +1,1 @@
+export 'detailed_group_screen.dart';

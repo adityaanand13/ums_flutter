@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/components/components.dart';
 
 class HomeScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
@@ -13,33 +13,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       drawer: widget.sideDrawer,
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
-                color: Colors.white,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: CustomFloatingActionButton(
+        icon: Icon(Icons.sentiment_dissatisfied),
+        label: "Display",
+        onPressed: () => _scaffoldKey.currentState.showBottomSheet(
+            (context) => BottomSheetInfo(
+              buildContext: context,
+              heading: "Information",
+              actionLabel: "Close",
+              information:
+                  "लचकनहि प्रसारन हमारी कोहम असक्षम असरकारक मार्गदर्शन सदस्य पसंद विशेष संपुर्ण जानकारी पढाए पहोच। दिये संस्थान दस्तावेज पुर्णता मार्गदर्शन तरीके",
             ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {},
-            ),
-          ],
-        ),
-        color: Color(0xff101010),
+          backgroundColor: Colors.black12,
+          ),
+
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
       body: Center(
         child: Text(
           "HomePage",
@@ -49,3 +46,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+//showModalBottomSheet(
+//backgroundColor: Colors.transparent,
+//isDismissible: false,
+//isScrollControlled: false,
+//context: context,
+//builder: (BuildContext buildContext) => BottomSheetInfo(
+//buildContext: buildContext,
+//heading: "Information",
+//actionLabel: "Close",
+//information: "लचकनहि प्रसारन हमारी कोहम असक्षम असरकारक मार्गदर्शन सदस्य पसंद विशेष संपुर्ण जानकारी पढाए पहोच। दिये संस्थान दस्तावेज पुर्णता मार्गदर्शन तरीके",
+//),
+//),
