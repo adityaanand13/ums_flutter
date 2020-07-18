@@ -1,37 +1,54 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:ums_flutter/api/auth_api.dart';
-import 'package:ums_flutter/models/request/login_request.dart';
-import 'package:ums_flutter/models/response/login_response.dart';
+import 'package:meta/meta.dart';
+import 'package:ums_flutter/api/api.dart';
+import 'package:ums_flutter/exception/exception.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/utils/utils.dart';
 
 class AuthService {
-  AuthApiProvider _provider = AuthApiProvider();
-  FlutterSecureStorage _storage = new FlutterSecureStorage();
+  final ServerApiProvider serverApiProvider;
+  final StorageApiProvider storageApiProvider;
+  final String _baseUrl = AUTH_URL;
+
+  //
+  AuthService(
+      {@required this.serverApiProvider, @required this.storageApiProvider});
 
   Future<LoginResponse> login({String usernameOrEmail, String password}) async {
     LoginRequest loginRequest =
         LoginRequest(usernameOrEmail = usernameOrEmail, password = password);
-    var response = await _provider.post(loginRequest.toMap(), "login");
+    var response = await serverApiProvider.post(
+        body: loginRequest.toMap(), route: "$_baseUrl/login", token: null);
     return LoginResponse.map(response);
   }
 
-  Future<bool> checkToken() async {
-    String token = await _storage.read(key: "token");
-    return await _provider.get("/verify", token);
+  Future<TokenStatus> checkToken() async {
+
+    try{
+      String token = await storageApiProvider.getToken();
+      var data =
+          await serverApiProvider.get(route: "$_baseUrl/verify", token: token);
+      data = data["valid"];
+      return data == true ? TokenStatus.OK : TokenStatus.UNAUTHORISED;
+    } on UnauthorisedException catch(_){
+      return TokenStatus.UNAUTHORISED;
+    } on Exception catch(_){
+      return TokenStatus.ERROR;
+    }
   }
 
-  Future<void> deleteToken() async {
-    await _storage.delete(key: "token");
+  Future<void> logout() async {
+    await storageApiProvider.deleteAllValue();
     return;
   }
 
   Future<void> persistToken(String token) async {
-    await _storage.write(key: 'token', value: token);
+    storageApiProvider.token = token;
     return;
   }
 
   Future<bool> hasToken() async {
-    var token = await _storage.read(key: "token");
-    if(token!=null){
+    var token = await storageApiProvider.getToken();
+    if (token != null) {
       return true;
     } else {
       return false;

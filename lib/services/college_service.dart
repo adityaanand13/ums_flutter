@@ -1,17 +1,20 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:ums_flutter/api/college_api.dart';
-import 'package:ums_flutter/models/request/college_request.dart';
-import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/models/response/colleges_response.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
+import 'package:meta/meta.dart';
+import 'package:ums_flutter/api/api.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/utils/utils.dart';
 
 class CollegeService {
-  CollegeApiProvider _provider = CollegeApiProvider();
-  FlutterSecureStorage _storage = new FlutterSecureStorage();
+  final ServerApiProvider serverApiProvider;
+  final StorageApiProvider storageApiProvider;
+
+  final String baseUrl = COLLEGE_URL;
+
+  CollegeService(
+      {@required this.serverApiProvider, @required this.storageApiProvider});
 
   Future<CollegesResponse> loadCollegeS() async {
-    String collegesJson = await _storage.read(key: "colleges");
+    String collegesJson = await storageApiProvider.readValue(key: "colleges");
     if (collegesJson != null) {
       return CollegesResponse.fromJsonMap(json.decode(collegesJson));
     } else {
@@ -21,59 +24,82 @@ class CollegeService {
 
   Future persistColleges(CollegesResponse collegesResponse) {
     return Future.wait<dynamic>([
-      _storage.write(key: "colleges", value: json.encode(collegesResponse.toJson()))
+      storageApiProvider.writeValue(
+          key: "colleges", value: json.encode(collegesResponse.toJson()))
     ]);
   }
 
   Future<CollegesResponse> getCollegeS() async {
-    String token = await _storage.read(key: "token");
-    var collegesJson = await _provider.get("", token);
+    String token = await storageApiProvider.getToken();
+    var collegesJson =
+        await serverApiProvider.get(token: token, route: "$baseUrl/");
     var collegesResponse = CollegesResponse.fromListMap(collegesJson);
     persistColleges(collegesResponse);
     return collegesResponse;
   }
 
   Future<CollegeResponse> getCollege(int id) async {
-    String token = await _storage.read(key: "token");
-    var collegeJson = await _provider.get("$id", token);
+    String token = await storageApiProvider.getToken();
+    var collegeJson =
+        await serverApiProvider.get(route: "$baseUrl/$id", token: token);
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
 
   Future<bool> deleteCollege(int id) async {
-    //todo refactor return
-    String token = await _storage.read(key: "token");
-    var collegeJson = await _provider.delete("$id", token);
+    try {
+      String token = await storageApiProvider.getToken();
+      await serverApiProvider.delete(route: "$baseUrl/$id", token: token);
+    } catch (_) {
+      print("error: ${_.toString()}");
+      return false;
+    }
     return true;
   }
 
   Future<CollegeResponse> updateCollege(CollegeRequest collegeRequest) async {
-    String token = await _storage.read(key: "token");
-    var collegeJson = await _provider.put(collegeRequest.toJson(), "", token);
+    String token = await storageApiProvider.getToken();
+    var collegeJson = await serverApiProvider.put(
+      body: collegeRequest.toJson(),
+      route: "$baseUrl/",
+      token: token,
+    );
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
 
   Future<CollegeResponse> createCollege(CollegeRequest collegeRequest) async {
-    String token = await _storage.read(key: "token");
-    var collegeJson = await _provider.post(collegeRequest.toJson(), "", token);
+    String token = await storageApiProvider.getToken();
+    var collegeJson = await serverApiProvider.post(
+      body: collegeRequest.toJson(),
+      route: "$baseUrl/",
+      token: token,
+    );
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
 
   Future<CollegeResponse> addCourse(
       {int collegeID, CourseResponse courseResponse}) async {
-    String token = await _storage.read(key: "token");
-    var collegeJson = await _provider.post(
-        courseResponse.toJson(), "$collegeID/add-course", token);
+    String token = await storageApiProvider.getToken();
+    var collegeJson = await serverApiProvider.post(
+        body: courseResponse.toJson(),
+        route: "$baseUrl/$collegeID/add-course",
+        token: token);
     var collegeResponse = CollegeResponse.fromJsonMap(collegeJson);
     return collegeResponse;
   }
 
-  Future<bool> addPrincipal({int collegeID, String username}) async {
-    String token = await _storage.read(key: "token");
-    var response =
-        await _provider.post(null, "$collegeID/add-principal/$username", token);
-    return true;
+  Future<PrincipalAssignResponse> addPrincipal(
+      {int collegeID, int instructorId}) async {
+    String token = await storageApiProvider.getToken();
+    var response = await serverApiProvider.post(
+        body: null,
+        route: "$baseUrl/$collegeID/add-principal/$instructorId",
+        token: token);
+    print(response);
+    var principalResponse = PrincipalAssignResponse.fromJsonMap(response);
+    print(principalResponse);
+    return principalResponse;
   }
 }
