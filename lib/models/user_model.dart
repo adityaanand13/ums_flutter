@@ -1,6 +1,4 @@
 class UserModel {
-  UserModel();
-
   int id;
   String username;
   String firstName;

@@ -1,8 +1,10 @@
 
-class GroupResponse {
+import 'package:equatable/equatable.dart';
 
-  int id;
-  String name;
+class GroupResponse extends Equatable{
+
+  final int id;
+  final String name;
 
 	GroupResponse.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
@@ -14,4 +16,8 @@ class GroupResponse {
 		data['name'] = name;
 		return data;
 	}
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, name];
 }

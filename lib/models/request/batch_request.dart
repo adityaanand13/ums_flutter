@@ -1,7 +1,7 @@
 
 class BatchRequest {
 
-  int id = null;
+  int id;
   String name;
 
   BatchRequest({this.id, this.name});

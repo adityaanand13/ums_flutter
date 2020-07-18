@@ -1,7 +1,12 @@
 export 'batch_response.dart';
+export 'colleges_response.dart';
 export 'college_response.dart';
 export 'course_response.dart';
 export 'group_response.dart';
+export 'login_response.dart';
+export 'principal_assign_response.dart';
 export 'section_response.dart';
 export 'semester_response.dart';
 export 'subject_response.dart';
+export 'username.dart';
+export 'usernames_response.dart';

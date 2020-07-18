@@ -1,11 +1,12 @@
+import 'package:equatable/equatable.dart';
 import 'package:ums_flutter/models/response/group_response.dart';
 
-class SectionResponse {
+class SectionResponse extends Equatable{
 
-  int id;
-  String name;
-  String description;
-  List<GroupResponse> groups;
+  final int id;
+  final String name;
+  final String description;
+  final List<GroupResponse> groups;
 
 	SectionResponse.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
@@ -23,4 +24,8 @@ class SectionResponse {
 			: null;
 		return data;
 	}
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, name, description, groups];
 }

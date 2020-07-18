@@ -1,9 +1,11 @@
 
-class SubjectResponse {
+import 'package:equatable/equatable.dart';
 
-  int id;
-  String name;
-  String description;
+class SubjectResponse extends Equatable{
+
+  final int id;
+  final String name;
+  final String description;
 
 	SubjectResponse.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
@@ -17,4 +19,8 @@ class SubjectResponse {
 		data['description'] = description;
 		return data;
 	}
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, name, description];
 }

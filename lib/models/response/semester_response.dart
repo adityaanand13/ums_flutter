@@ -1,19 +1,20 @@
+import 'package:equatable/equatable.dart';
 import 'package:ums_flutter/models/response/section_response.dart';
 import 'package:ums_flutter/models/response/subject_response.dart';
 
-class SemesterResponse {
+class SemesterResponse extends Equatable{
 
-  int id;
-  String name;
-  bool isActive;
-  int seq;
-  List<SectionResponse> sections;
-  List<SubjectResponse> subjects;
+  final int id;
+	final String name;
+	final bool active;
+	final int seq;
+	final List<SectionResponse> sections;
+	final List<SubjectResponse> subjects;
 
 	SemesterResponse.fromJsonMap(Map<String, dynamic> map):
 		id = map["id"],
 		name = map["name"],
-		isActive = map["isActive"],
+		active = map["active"],
 		seq = map["seq"],
 		sections = List<SectionResponse>.from(map["sections"].map((it) => SectionResponse.fromJsonMap(it))),
 		subjects = List<SubjectResponse>.from(map["subjects"].map((it) => SubjectResponse.fromJsonMap(it)));
@@ -22,7 +23,7 @@ class SemesterResponse {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		data['id'] = id;
 		data['name'] = name;
-		data['isActive'] = isActive;
+		data['active'] = active;
 		data['seq'] = seq;
 		data['sections'] = sections != null ? 
 			this.sections.map((v) => v.toJson()).toList()
@@ -32,4 +33,8 @@ class SemesterResponse {
 			: null;
 		return data;
 	}
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [id, name, active, seq, sections, subjects];
 }
