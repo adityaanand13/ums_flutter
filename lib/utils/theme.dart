@@ -37,7 +37,7 @@ class AppTheme {
       onPrimary: _lightOnPrimaryColor,
     ),
     iconTheme: IconThemeData(
-      color: _iconColor,
+      color: Colors.white70,
     ),
     textTheme: _lightTextTheme,
   );
@@ -55,7 +55,7 @@ class AppTheme {
       onPrimary: _darkOnPrimaryColor,
     ),
     iconTheme: IconThemeData(
-      color: _iconColor,
+      color: Colors.white70,
     ),
     textTheme: _darkTextTheme,
   );

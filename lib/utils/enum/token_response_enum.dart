@@ -1,0 +1,1 @@
+enum TokenStatus {OK, UNAUTHORISED, ERROR}
