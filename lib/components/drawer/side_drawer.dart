@@ -1,14 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/authentication_bloc.dart';
-import 'package:ums_flutter/bloc/user_bloc.dart';
-import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
-import 'package:ums_flutter/event_state/user/user_event.dart';
-import 'package:ums_flutter/event_state/user/user_state.dart';
-import 'package:ums_flutter/services/auth_service.dart';
-import 'package:ums_flutter/services/user_service.dart';
-import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/components/drawer/menu_item.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/services/services.dart';
+import 'package:ums_flutter/utils/utils.dart';
+
+import 'menu_item.dart';
 
 class SideDrawer extends StatelessWidget {
   final AuthService authService;
@@ -70,8 +68,11 @@ class SideDrawer extends StatelessWidget {
                     icon: Icons.exit_to_app,
                     title: "Logout",
                     onTap: () {
+                      HapticFeedback.lightImpact();
                       BlocProvider.of<AuthenticationBloc>(context)
-                          .add(LoggedOut());
+                          .add(AuthenticationEvent.LoggedOut);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/', (Route<dynamic> route) => false);
                     },
                   ),
                 ],
@@ -99,8 +100,9 @@ class SideDrawer extends StatelessWidget {
   Widget _userDetails({String username, String name, BuildContext context}) {
     return GestureDetector(
       onTap: () {
+        HapticFeedback.lightImpact();
         Navigator.of(context).pushNamedAndRemoveUntil(
-            '/CollegesScreen', ModalRoute.withName('/'));
+            '/CollegesScreen', (route) => route.isFirst);
       },
       child: Column(
         children: <Widget>[
@@ -155,19 +157,30 @@ class SideDrawer extends StatelessWidget {
     return Column(
       children: <Widget>[
         MenuItem(
+          icon: Icons.home,
+          title: "Home",
+          onTap: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/', (Route<dynamic> route) => false);
+          },
+        ),
+        MenuItem(
           icon: Icons.school,
           title: "Colleges",
           onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/CollegesScreen', ModalRoute.withName('/'));
+            HapticFeedback.lightImpact();
+            Navigator.pushNamedAndRemoveUntil(context,
+                '/CollegesScreen', (route) => route.isFirst);
           },
         ),
         MenuItem(
           icon: Icons.school,
           title: "Instructors",
           onTap: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                '/CollegesScreen', ModalRoute.withName('/'));
+            HapticFeedback.lightImpact();
+            Navigator.pushNamedAndRemoveUntil(context,
+                '/CollegesScreen', (route) => route.isFirst);
           },
         ),
       ],
