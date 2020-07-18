@@ -1,13 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/college_bloc.dart';
-import 'package:ums_flutter/event_state/college/college_event.dart';
 import 'package:ums_flutter/models/response/college_response.dart';
 import 'package:ums_flutter/screens/college/detailed_college_screen.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/side_drawer.dart';
 
 class CollegeView extends StatelessWidget {
   final CollegeResponse collegeResponse;
@@ -148,7 +145,7 @@ class CollegeView extends StatelessWidget {
                               ),
                             ),
                             OutlineButton(
-                              onPressed: () => {print('hey')},
+                              onPressed: () => {},
                               borderSide: BorderSide(
                                 color: Colors.lightGreen,
                                 style: BorderStyle.solid,

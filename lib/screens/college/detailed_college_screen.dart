@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/college_bloc.dart';
-import 'package:ums_flutter/event_state/college/college_event.dart';
-import 'package:ums_flutter/event_state/college/college_state.dart';
-import 'package:ums_flutter/models/response/college_response.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
-import 'package:ums_flutter/screens/courses/add_course_screen.dart';
-import 'package:ums_flutter/screens/courses/detailed_course_screen.dart';
-import 'package:ums_flutter/services/college_service.dart';
+import 'dart:async';
 
-class DetailedCollegeScreen extends StatelessWidget {
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/components/components.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/screens/screens.dart';
+import 'package:ums_flutter/utils/utils.dart';
+
+class DetailedCollegeScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
   final CollegeResponse collegeResponse;
 
@@ -23,131 +23,111 @@ class DetailedCollegeScreen extends StatelessWidget {
         super(key: key);
 
   @override
+  _DetailedCollegeScreenState createState() => _DetailedCollegeScreenState();
+}
+
+class _DetailedCollegeScreenState extends State<DetailedCollegeScreen> {
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
+  }
+
+  Completer<void> _refreshCompleter = Completer<void>();
+
+  @override
   Widget build(BuildContext context) {
-    final rWidth = MediaQuery.of(context).size.width - 18 * 2;
-    CollegeResponse _collegeResponse = collegeResponse;
     return Scaffold(
-      drawer: sideDrawer,
+      drawer: widget.sideDrawer,
       backgroundColor: Colors.black,
-      floatingActionButton: new FloatingActionButton.extended(
-        backgroundColor: Color(0xFFFD3664),
-        icon: Icon(Icons.add),
-        label: Text(
-          'Add Course',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-        ),
+      floatingActionButton: CustomFloatingActionButton(
         onPressed: () {
+          HapticFeedback.lightImpact();
           Navigator.of(context).push(
-            new MaterialPageRoute(
-              builder: (BuildContext context) => new AddCourseScreen(
-                sideDrawer: sideDrawer,
-                collegeID: collegeResponse.id,
+            new CupertinoPageRoute(
+              builder: (BuildContext context) => AddEditCourseScreen(
+                sideDrawer: widget.sideDrawer,
+                collegeName: widget.collegeResponse.name,
+                collegeCode: widget.collegeResponse.code,
+                collegeId: widget.collegeResponse.id,
               ),
             ),
           );
         },
+        icon: Icon(Icons.add, color: Colors.white),
+        label: 'Add Course',
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
-                color: Colors.white,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {},
-            ),
-          ],
-        ),
-        color: Color(0xff101010),
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(),
       body: SafeArea(
-        child: BlocListener<CollegeBloc, CollegeState>(
-          listener: (BuildContext context, state) {
-            if (state is CollegeError) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${state.error}'),
-                  backgroundColor: Colors.red,
-                  duration: Duration(seconds: 3),
-                ),
-              );
-            }
+        bottom: false,
+        child: RefreshIndicator(
+          color: Colors.red,
+          backgroundColor: Color.fromARGB(254, 54, 54, 54),
+          onRefresh: () {
+            BlocProvider.of<CollegesBloc>(context)
+                .add(CollegeFetch(collegeResponse: widget.collegeResponse));
+            Future.delayed(const Duration(seconds: 2), () {
+              _refreshCompleter?.complete();
+              _refreshCompleter = Completer();
+            });
+            return _refreshCompleter.future;
           },
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
-              padding: EdgeInsets.all(18),
+              margin: EdgeInsets.all(SIDE_MARGIN),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Maharishi  Markandeshwar',
-                        style: TextStyle(
-                            letterSpacing: 1,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFFD3664)),
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        'Deemed to be University',
-                        style: TextStyle(
-                            letterSpacing: 2,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      SizedBox(height: 5),
-                      Divider(
-                        thickness: 1,
-                        color: Color(0xCCFD3664),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ),
-                  BlocBuilder<CollegeBloc, CollegeState>(
-                    builder: (context, state) {
-                      if (state is CollegeLoading) {
-                        return _dataAbsent(collegeResponse, rWidth);
-                      } else if (state is CollegeAdded) {
-                        if (_collegeResponse.id != state.collegeResponse.id) {
-                          BlocProvider.of<CollegeBloc>(context)
-                              .add(GetCollege(id: collegeResponse.id));
+                  TopLogoHeader(),
+                  BlocBuilder<CollegesBloc, CollegesState>(
+                    builder: (BuildContext context, CollegesState state) {
+                      if (state is CollegesLoadSuccess) {
+                        _refreshCompleter?.complete();
+                        _refreshCompleter = Completer();
+                        var college = state.collegesResponse.firstWhere(
+                            (element) =>
+                                widget.collegeResponse.id == element.id,
+                            orElse: () => null);
+                        if (college?.courses == null) {
+                          BlocProvider.of<CollegesBloc>(context).add(
+                              CollegeFetch(
+                                  collegeResponse: widget.collegeResponse));
                           return Column(
-                            children: <Widget>[
-                              SizedBox(height: 10),
-                              Center(child: CircularProgressIndicator()),
-                              SizedBox(
-                                height: 10,
+                            children: [
+                              _cardView(context, widget.collegeResponse, true),
+                              CustomCircularProgress(
+                                label: "Loading Courses",
                               ),
                             ],
                           );
                         } else {
-                          _collegeResponse = state.collegeResponse;
-                          return _dataPresent(
-                              _collegeResponse, rWidth, context);
+                          return Column(
+                            children: <Widget>[
+                              _cardView(context, college, false),
+                              Center(
+                                child: Container(
+                                  height: 36,
+                                  child: Text(
+                                    'COURSES',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFFFD3664)),
+                                  ),
+                                ),
+                              ),
+                              _courseList(college, context),
+                            ],
+                          );
                         }
                       } else {
-                        BlocProvider.of<CollegeBloc>(context)
-                            .add(GetCollege(id: collegeResponse.id));
-                        return _dataAbsent(collegeResponse, rWidth);
+                        return CustomCircularProgress(
+                          label: "Loading Courses",
+                        );
                       }
                     },
-                  ),
+                  )
                 ],
               ),
             ),
@@ -157,68 +137,57 @@ class DetailedCollegeScreen extends StatelessWidget {
     );
   }
 
-  Widget _dataPresent(
-      CollegeResponse collegeResponse, double rWidth, BuildContext context) {
-    return Column(
-      children: <Widget>[
-        _cardView(collegeResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'COURSES',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
-                ),
-              ),
+  Widget _courseList(CollegeResponse collegeResponse, BuildContext context) {
+    List<CourseResponse> courses = collegeResponse.courses;
+    List<Widget> list = new List<Widget>();
+    if (courses.isEmpty) {
+      list.add(
+        Center(
+          child: Text(
+            "No course is present yet...!\nPlease add a new course.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white38,
+              fontWeight: FontWeight.bold,
             ),
-            SizedBox(height: 10),
-            _courseList(collegeResponse, rWidth, context),
-            SizedBox(
-              height: 10,
-            ),
-          ],
+          ),
         ),
-      ],
-    );
-  }
-
-  Widget _dataAbsent(CollegeResponse collegeResponse, double rWidth) {
-    return Column(
-      children: <Widget>[
-        _cardView(collegeResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'COURSES',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
+      );
+    } else {
+      for (var course in courses) {
+        list.add(
+          TwoColumnCard(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              BlocProvider.of<CourseBloc>(context)
+                ..add(CourseLoadToUI(
+                    courseResponse: course, collegeId: collegeResponse.id));
+              Navigator.of(context).push(
+                new CupertinoPageRoute(
+                  builder: (BuildContext context) => new DetailedCourseScreen(
+                    sideDrawer: widget.sideDrawer,
+                    collegeId: collegeResponse.id,
+                    courseResponse: course,
+                    collegeCode: collegeResponse.code,
+                    collegeName: collegeResponse.name,
+                  ),
                 ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(child: CircularProgressIndicator()),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        )
-      ],
-    );
+              );
+            },
+            header: "${course.code}",
+            label: "${course.name}",
+            item1: 'Duration: ${course.duration}',
+            item2: 'Batches: ${course.batches.length}',
+          ),
+        );
+      }
+    }
+    return Column(children: list);
   }
 
-  Widget _cardView(CollegeResponse collegeResponse, double rWidth) {
+  Widget _cardView(
+      BuildContext context, CollegeResponse collegeResponse, bool isLoading) {
     return Column(
       children: <Widget>[
         Column(
@@ -250,7 +219,18 @@ class DetailedCollegeScreen extends StatelessWidget {
                       'Edit',
                       style: TextStyle(color: Colors.white54, fontSize: 15),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        new CupertinoPageRoute(
+                          builder: (BuildContext context) =>
+                              new AddEditCollegeScreen(
+                            sideDrawer: widget.sideDrawer,
+                            isEditing: true,
+                            collegeResponse: collegeResponse,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 )
               ],
@@ -282,45 +262,103 @@ class DetailedCollegeScreen extends StatelessWidget {
                 SizedBox(
                   height: 5,
                 ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Dr. Sumit Mittal",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      "1417098",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: null,
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.edit,
-                            color: Colors.green,
-                            size: 16,
+                isLoading
+                    ? LinearProgressIndicator()
+                    : collegeResponse.principal != null
+                        ? Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                "\\\\. ${collegeResponse.principal?.firstName} ${collegeResponse.principal?.lastName}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "${collegeResponse.principal?.username}",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  Navigator.of(context).push(
+                                    new CupertinoPageRoute(
+                                      builder: (BuildContext context) =>
+                                          new AssignEditPrincipalScreen(
+                                        sideDrawer: widget.sideDrawer,
+                                        collegeResponse: collegeResponse,
+                                        isEditing: true,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.edit,
+                                      color: Colors.green,
+                                      size: 16,
+                                    ),
+                                    Text(
+                                      " EDIT",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                "Please assign a principal",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.yellow,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    new CupertinoPageRoute(
+                                      builder: (BuildContext context) =>
+                                          new AssignEditPrincipalScreen(
+                                        sideDrawer: widget.sideDrawer,
+                                        collegeResponse: collegeResponse,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.edit,
+                                      color: Colors.yellowAccent,
+                                      size: 16,
+                                    ),
+                                    Text(
+                                      " EDIT",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.yellowAccent,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            " EDIT",
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
                 SizedBox(
                   height: 25,
                 ),
@@ -412,114 +450,10 @@ class DetailedCollegeScreen extends StatelessWidget {
               thickness: 1,
               color: Color(0xCCFD3664),
             ),
+            SizedBox(height: 8),
           ],
         ),
       ],
     );
-  }
-
-  Widget _courseList(
-      CollegeResponse collegeResponse, double rWidth, BuildContext context) {
-    List<CourseResponse> courses = collegeResponse.courses;
-    List<Widget> list = new List<Widget>();
-    if (courses.isEmpty) {
-      list.add(Center(
-        child: Text(
-          "No course is present yet...!\nPlease add a new course.",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white38,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ));
-    } else {
-      for (var course in courses) {
-        list.add(GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(
-              new MaterialPageRoute(
-                builder: (BuildContext context) => new DetailedCourseScreen(
-                  sideDrawer: sideDrawer,
-                  collegeId: collegeResponse.id,
-                  courseResponse: course,
-                  collegeCode: collegeResponse.code,
-                  collegeName: collegeResponse.name,
-                ),
-              ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF0D0D0D),
-              border: Border.all(
-                color: Colors.white24,
-              ),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            padding: EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Container(
-                  width: (rWidth - 20) * 0.68,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "${course.code}",
-                        style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFFD3664)),
-                      ),
-                      Text(
-                        "${course.name}",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  width: (rWidth - 10) * 0.3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Text(
-                        'Duration: ${course.duration}',
-                        style: TextStyle(
-                          fontFamily: 'Courier',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text('Batches: \$\$',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Courier',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.white,
-                          )),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-        list.add(SizedBox(height: 10));
-      }
-    }
-    return Column(children: list);
   }
 }

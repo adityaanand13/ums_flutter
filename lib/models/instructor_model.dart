@@ -1,12 +1,12 @@
 
 class InstructorModel {
 
-	int id = null;
+	int id;
   String username;
   String firstName;
   String email;
   String lastName;
-  String DOB;
+  String dob;
   String gender;
   String phone;
   String blood;
@@ -27,7 +27,7 @@ class InstructorModel {
 		firstName = map["firstName"],
 		email = map["email"],
 		lastName = map["lastName"],
-		DOB = map["DOB"],
+		dob = map["dob"],
 		gender = map["gender"],
 		phone = map["phone"],
 		blood = map["blood"],
@@ -49,7 +49,7 @@ class InstructorModel {
 		data['firstName'] = firstName;
 		data['email'] = email;
 		data['lastName'] = lastName;
-		data['DOB'] = DOB;
+		data['dob'] = dob;
 		data['gender'] = gender;
 		data['phone'] = phone;
 		data['blood'] = blood;
@@ -84,5 +84,6 @@ class InstructorModel {
 				this.pinCode,
 				this.country,
 				this.password,
-				this.DOB});
+// ignore: non_constant_identifier_names
+				this.dob});
 }

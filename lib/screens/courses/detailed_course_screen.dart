@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/college_bloc.dart';
-import 'package:ums_flutter/bloc/course_bloc.dart';
-import 'package:ums_flutter/components/header/page_header.dart';
-import 'package:ums_flutter/event_state/college/college_state.dart';
-import 'package:ums_flutter/event_state/course/course_event.dart';
-import 'package:ums_flutter/event_state/course/course_state.dart';
-import 'package:ums_flutter/models/response/batch_response.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
-import 'package:ums_flutter/screens/courses/add_course_screen.dart';
+import 'dart:async';
 
-class DetailedCourseScreen extends StatelessWidget {
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
+import 'package:ums_flutter/components/components.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/screens/screens.dart';
+import 'package:ums_flutter/utils/constants.dart';
+
+class DetailedCourseScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
   final CourseResponse courseResponse;
   final String collegeCode;
@@ -32,120 +31,115 @@ class DetailedCourseScreen extends StatelessWidget {
         super(key: key);
 
   @override
+  _DetailedCourseScreenState createState() => _DetailedCourseScreenState();
+}
+
+class _DetailedCourseScreenState extends State<DetailedCourseScreen> {
+  void initState() {
+    super.initState();
+    _refreshCompleter = Completer<void>();
+  }
+
+  Completer<void> _refreshCompleter = Completer<void>();
+
+  @override
   Widget build(BuildContext context) {
-    final rWidth = MediaQuery.of(context).size.width - 18 * 2;
-    CourseResponse _courseResponse = courseResponse;
+    CourseResponse _courseResponse = widget.courseResponse;
     return Scaffold(
-      drawer: sideDrawer,
+      drawer: widget.sideDrawer,
       backgroundColor: Colors.black,
-      floatingActionButton: new FloatingActionButton.extended(
-        backgroundColor: Color(0xFFFD3664),
-        icon: Icon(Icons.add),
-        label: Text(
-          'Add Batch',
-          style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-        ),
-        onPressed: (){},
-//            () {
-//          Navigator.of(context).push(
-//            new MaterialPageRoute(
-//                builder: (BuildContext context) => new AddCourseScreen(
-//                      sideDrawer: sideDrawer,
-//                    ),
-//            ),
-//          );
-//        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        child: new Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
-                color: Colors.white,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {},
-            ),
-          ],
-        ),
-        color: Color(0xff101010),
-      ),
-      body: SafeArea(
-        child: BlocListener<CollegeBloc, CollegeState>(
-          listener: (BuildContext context, state) {
-            if (state is CollegeError) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${state.error}'),
-                  backgroundColor: Colors.red,
-                  duration: Duration(seconds: 3),
+      floatingActionButton: CustomFloatingActionButton(
+          icon: Icon(Icons.add, color: Colors.white),
+          label: "Add Batch",
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).push(
+              new MaterialPageRoute(
+                builder: (BuildContext context) => new AddBatchScreen(
+                  sideDrawer: widget.sideDrawer,
+                  courseID: _courseResponse.id,
                 ),
-              );
-            }
+              ),
+            );
+          }),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: CustomBottomNavigationBar(),
+      body: SafeArea(
+        child: RefreshIndicator(
+          color: Colors.red,
+          backgroundColor: Color.fromARGB(254, 54, 54, 54),
+          onRefresh: () {
+            //todo do changes
+
+            Future.delayed(const Duration(seconds: 2), () {
+              _refreshCompleter?.complete();
+              _refreshCompleter = Completer();
+            });
+            return _refreshCompleter.future;
           },
           child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
-              padding: EdgeInsets.all(18),
+              margin: EdgeInsets.all(SIDE_MARGIN),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'Maharishi  Markandeshwar',
-                    style: TextStyle(
-                        letterSpacing: 1,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFFFD3664)),
+                  Column(
+                    children: <Widget>[
+                      TopLogoHeader(),
+                      PageHeader(
+                        line1: widget.collegeCode,
+                        marginTop: 5,
+                        marginBottom: 5,
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    'Deemed to be University',
-                    style: TextStyle(
-                        letterSpacing: 2,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  SizedBox(height: 5),
-                  Divider(
-                    thickness: 1,
-                    color: Color(0xCCFD3664),
-                  ),
-                  PageHeader(
-                    line1: collegeCode,
-                    marginTop: 5,
-                    marginBottom: 5,
-                  ),
-                  BlocBuilder<CourseBloc, CourseState>(
-                    builder: (context, state) {
-                      if (state is CourseLoading) {
-                        return _dataAbsent(_courseResponse, rWidth);
-                      } else if (state is CourseAdded) {
-                        if (_courseResponse.id != state.courseResponse.id) {
-                          BlocProvider.of<CourseBloc>(context)
-                              .add(GetCourse(id: _courseResponse.id));
-                          return _dataAbsent(_courseResponse, rWidth);
-                        } else {
-                          _courseResponse = state.courseResponse;
-                          return _dataPresent(_courseResponse, rWidth);
-                        }
-                      } else {
-                        BlocProvider.of<CourseBloc>(context)
-                            .add(GetCourse(id: _courseResponse.id));
-                        return _dataAbsent(courseResponse, rWidth);
+                  BlocConsumer<CourseBloc, CourseState>(
+                    listener: (BuildContext context, state) {
+                      if (state is CourseLoadError) {
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${state.error}'),
+                            backgroundColor: Colors.red,
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
                       }
                     },
-                  ),
+                    builder: (context, state) {
+                      if (state is CourseLoadSuccess) {
+                        CourseResponse course = state.courseResponse;
+                        return Column(
+                          children: <Widget>[
+                            _cardView(course),
+                            SizedBox(height: 8),
+                            Center(
+                              child: Container(
+                                height: 36,
+                                child: Text(
+                                  'Batches',
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFFFD3664)),
+                                ),
+                              ),
+                            ),
+                            _batchList(course, context)
+                          ],
+                        );
+                      } else {
+                        return Column(
+                          children: [
+                            _cardView(widget.courseResponse),
+                            CustomCircularProgress(
+                              label: "Loading Batches",
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  )
                 ],
               ),
             ),
@@ -155,67 +149,7 @@ class DetailedCourseScreen extends StatelessWidget {
     );
   }
 
-  Widget _dataPresent(CourseResponse courseResponse, double rWidth) {
-    return Column(
-      children: <Widget>[
-        _cardView(courseResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'BATCHES',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            _courseList(courseResponse, rWidth),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _dataAbsent(CourseResponse courseResponse, double rWidth) {
-    return Column(
-      children: <Widget>[
-        _cardView(courseResponse, rWidth),
-        Column(
-          children: <Widget>[
-            SizedBox(height: 8),
-            Center(
-              child: Container(
-                height: 36,
-                child: Text(
-                  'Batches',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFFD3664)),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(child: CircularProgressIndicator()),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _cardView(CourseResponse courseResponse, double rWidth) {
+  Widget _cardView(CourseResponse courseResponse) {
     return Column(
       children: <Widget>[
         Column(
@@ -247,7 +181,22 @@ class DetailedCourseScreen extends StatelessWidget {
                       'Edit',
                       style: TextStyle(color: Colors.white54, fontSize: 15),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).push(
+                        new CupertinoPageRoute(
+                          builder: (BuildContext context) =>
+                              AddEditCourseScreen(
+                            sideDrawer: widget.sideDrawer,
+                            collegeName: widget.collegeName,
+                            collegeCode: widget.collegeCode,
+                            collegeId: widget.collegeId,
+                            isEditing: true,
+                            courseResponse: courseResponse,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 )
               ],
@@ -301,62 +250,44 @@ class DetailedCourseScreen extends StatelessWidget {
     );
   }
 
-  Widget _courseList(CourseResponse courseResponse, double rWidth) {
+  Widget _batchList(CourseResponse courseResponse, BuildContext context) {
     List<BatchResponse> batches = courseResponse.batches;
     List<Widget> list = new List<Widget>();
     if (batches.isEmpty) {
-      list.add(Center(
-        child: Text(
-          "No batch is present yet...!\nPlease add a new batch.",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white38,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ));
-    } else {
-      for (var batch in batches) {
-        list.add(
-          GestureDetector(
-            onTap: null,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF0D0D0D),
-                border: Border.all(
-                  color: Colors.white24,
-                ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              padding: EdgeInsets.all(10),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "${batch.name}",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFFFD3664)),
-                    ),
-                    Text(
-                      "${batch.description}",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+      list.add(
+        Center(
+          child: Text(
+            "No Batch is present yet...!\nPlease add a new batch.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white38,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        );
-        list.add(SizedBox(height: 10));
-      }
+        ),
+      );
+    } else {
+      batches.asMap().forEach(
+            (index, batch) => list.add(
+              SingleItemCard(
+                label: batch.name,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.of(context).push(
+                    new CupertinoPageRoute(
+                      builder: (BuildContext context) =>
+                          new DetailedBatchScreen(
+                              collegeCode: widget.collegeCode,
+                              index: index,
+                              courseResponse: courseResponse,
+                              sideDrawer: widget.sideDrawer),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
     }
     return Column(children: list);
   }

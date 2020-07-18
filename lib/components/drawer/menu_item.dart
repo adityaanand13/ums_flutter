@@ -12,6 +12,7 @@ class MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(16),

@@ -1,0 +1,1 @@
+export 'detailed_semester_screen.dart';

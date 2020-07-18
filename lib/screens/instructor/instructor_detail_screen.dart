@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ums_flutter/models/instructor_model.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/side_drawer.dart';
 
 class InstructorDetailScreen extends StatefulWidget {
   final InstructorModel instructor;

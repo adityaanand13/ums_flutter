@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/add_instructor_bloc.dart';
-import 'package:ums_flutter/event_state/add_instructor/add_instructor_event.dart';
-import 'package:ums_flutter/event_state/add_instructor/add_instructor_state.dart';
+import 'package:ums_flutter/bloc/bloc.dart';
 import 'package:ums_flutter/models/instructor_model.dart';
-import 'package:ums_flutter/models/user_model.dart';
-import 'package:ums_flutter/screens/college/add_principal.dart';
 import 'package:ums_flutter/screens/instructor/instructor_detail_screen.dart';
 import 'package:ums_flutter/utils/sizeConfig.dart';
-import 'package:ums_flutter/components/drawer/Side_drawer.dart';
+import 'package:ums_flutter/components/drawer/side_drawer.dart';
 
 class AddInstructorScreen extends StatefulWidget {
   final SideDrawer sideDrawer;
@@ -168,9 +165,9 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
         country: _countryController.text,
         userType: "INSTRUCTOR",
         password: "12345678",
-        DOB: _dobController.text);
+        dob: _dobController.text);
     BlocProvider.of<AddInstructorBloc>(context)
-        .add(AddInstructor(instructor: newInstructor));
+        .add(AddInstructorSubmitted(instructor: newInstructor));
   }
 
   @override
@@ -186,7 +183,7 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
       drawer: widget.sideDrawer,
       body: BlocListener<AddInstructorBloc, AddInstructorState>(
         listener: (BuildContext context, state) {
-          if (state is InstructorAdded) {
+          if (state is AddInstructorSuccess) {
             return _showDialog(state.instructor);
           } else if (state is AddInstructorError) {
             Scaffold.of(context).showSnackBar(
@@ -286,7 +283,8 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               maxLength: 10,
                               minLength: 3,
                               labelText: 'Phone',
-                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  signed: false, decimal: false),
                               context: context,
                               textEditingController: _phoneController,
                               focusNode: _phoneFocus,
@@ -319,7 +317,8 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               labelText: 'Aadhar Number',
                               isLastEntry: true,
                               context: context,
-                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  signed: false, decimal: false),
                               textEditingController: _aadharController,
                               focusNode: _aadharFocus,
                               nextFocusNode: _religionFocus,
@@ -393,7 +392,8 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                               minLength: 10,
                               labelText: 'Pincode',
                               isLastEntry: true,
-                              keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  signed: false, decimal: false),
                               context: context,
                               textEditingController: _pincodeController,
                               focusNode: _pincodeFocus,
@@ -421,10 +421,10 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                           color: Colors.green,
                           elevation: 3.0,
                           child: GestureDetector(
-                            onTap: state is! AddInstructorLoading
-                                ?  () => _onCreateButtonPressed(context)
+                            onTap: state is! AddInstructorLoadInProgress
+                                ? () => _onCreateButtonPressed(context)
                                 : null,
-                            child: state is AddInstructorLoading
+                            child: state is AddInstructorLoadInProgress
                                 ? Container(
                                     child: CircularProgressIndicator(),
                                   )
@@ -452,7 +452,10 @@ class _AddInstructorScreenState extends State<AddInstructorScreen> {
                           color: Colors.red,
                           elevation: 7.0,
                           child: GestureDetector(
-                            onTap: () => Navigator.of(context).pop(),
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              Navigator.of(context).pop();
+                            },
                             child: Center(
                               child: Text(
                                 'Cancel',

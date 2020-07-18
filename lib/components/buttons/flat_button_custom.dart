@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FlatButtonCustom extends StatelessWidget {
   final GestureTapCallback onTap;
@@ -27,6 +28,7 @@ class FlatButtonCustom extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(30),
         onTap: () {
+          HapticFeedback.lightImpact();
           FocusScope.of(context).requestFocus(new FocusNode());
           if (isEnabled) {
             onTap();

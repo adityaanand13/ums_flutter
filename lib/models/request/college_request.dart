@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+import '../models.dart';
+
 class CollegeRequest {
-  int id = null;
+  int id;
   String name;
   String code;
   String phone;
@@ -24,6 +26,15 @@ class CollegeRequest {
     @required this.email,
     @required this.phone,
   });
+
+  CollegeRequest.fromResponse({CollegeResponse collegeResponse}){
+    this.id = collegeResponse.id;
+    this.name = collegeResponse.name;
+    this.code = collegeResponse.code;
+    this.address = collegeResponse.address;
+    this.email = collegeResponse.email;
+    this.phone = collegeResponse.phone;
+  }
 
   CollegeRequest.fromJsonMap(Map<String, dynamic> map)
       : id = map["id"],

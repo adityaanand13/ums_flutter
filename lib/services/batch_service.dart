@@ -1,43 +1,51 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:ums_flutter/api/batch_api.dart';
-import 'package:ums_flutter/api/course_api.dart';
-import 'package:ums_flutter/models/request/batch_request.dart';
-import 'package:ums_flutter/models/response/batch_response.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
-import 'package:ums_flutter/models/response/course_response.dart';
+import 'package:meta/meta.dart';
+import 'package:ums_flutter/api/api.dart';
+import 'package:ums_flutter/models/models.dart';
+import 'package:ums_flutter/utils/utils.dart';
 
 class BatchService {
-  BatchApiProvider _provider = BatchApiProvider();
-  CourseApiProvider _courseApiProvider = CourseApiProvider();
-  FlutterSecureStorage _storage = new FlutterSecureStorage();
+  final ServerApiProvider serverApiProvider;
+  final StorageApiProvider storageApiProvider;
+
+  final String _baseUrl = BATCH_URL;
+  final String _courseUrl = COURSE_URL;
+
+  BatchService({@required this.serverApiProvider,@required this.storageApiProvider});
+
 
   //todo refactor
-  Future<CourseResponse> addBatch({int courseID, BatchRequest batchRequest}) async {
-    String token = await _storage.read(key: "token");
-    var courseJson = await _courseApiProvider.post(batchRequest.toJson(), "$courseID/add-batch", token);
-    var courseResponse = CourseResponse.fromJsonMap(courseJson);
-    return courseResponse;
+  Future<CourseResponse> addBatch(
+      {int courseID, BatchRequest batchRequest}) async {
+    String token = await storageApiProvider.getToken();
+    var courseJson = await serverApiProvider.post(
+        route: "$_courseUrl/$courseID/add-batch/${batchRequest.name}",
+        token: token);
+    return CourseResponse.fromJsonMap(courseJson);
   }
 
   Future<BatchResponse> getBatch(int id) async {
-    String token = await _storage.read(key: "token");
-    var batchJson = await _provider.get("$id", token);
-    var batchResponse = BatchResponse.fromJsonMap(batchJson);
-    return batchResponse;
+    String token = await storageApiProvider.getToken();
+    var batchJson =
+        await serverApiProvider.get(route: "$_baseUrl/$id", token: token);
+    return BatchResponse.fromJsonMap(batchJson);
   }
 
   Future<bool> deleteBatch(int id) async {
-    //todo refactor return
-    String token = await _storage.read(key: "token");
-    var batchJson = await _provider.delete("$id", token);
-    return true;
+    try {
+      String token = await storageApiProvider.getToken();
+      await serverApiProvider.delete(route: "$_baseUrl/$id", token: token);
+      return true;
+    } catch (_) {
+      print("error: ${_.toString()}");
+      return false;
+    }
   }
 
   Future<BatchResponse> updateBatch(BatchRequest batchRequest) async {
-    String token = await _storage.read(key: "token");
-    var batchJson = await _provider.put(batchRequest.toJson(), "", token);
-    var batchResponse = BatchResponse.fromJsonMap(batchJson);
-    return batchResponse;
+    String token = await storageApiProvider.getToken();
+    var batchJson = await serverApiProvider.put(
+        body: batchRequest.toJson(), route: "$_baseUrl/", token: token);
+    return BatchResponse.fromJsonMap(batchJson);
   }
 
 //  Future<CollegeResponse> addBatch({int courseID, BatchResponse batchResponse}) async {
