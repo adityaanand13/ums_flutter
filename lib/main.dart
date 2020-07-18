@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ums_flutter/bloc/authentication_bloc.dart';
-import 'package:ums_flutter/event_state/authentication/authentication_event.dart';
-import 'package:ums_flutter/services/auth_service.dart';
-import 'package:ums_flutter/services/user_service.dart';
+import 'package:ums_flutter/api/api.dart';
+import 'package:ums_flutter/services/services.dart';
 import 'app.dart';
-
+import 'package:ums_flutter/bloc/bloc.dart';
 
 class SimpleBlocDelegate extends BlocDelegate {
   @override
@@ -28,7 +26,7 @@ class SimpleBlocDelegate extends BlocDelegate {
   }
 }
 
-void main(){
+void main() {
   //ensure only portrait mode
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -36,20 +34,26 @@ void main(){
     DeviceOrientation.portraitDown,
   ]);
   BlocSupervisor.delegate = SimpleBlocDelegate();
-  final authService = AuthService();
-  final userService = UserService();
-//  printData();
+  final authService = AuthService(
+    serverApiProvider: serverApiProvider,
+    storageApiProvider: storageApiProvider,
+  );
+  final userService = UserService(
+    serverApiProvider: serverApiProvider,
+    storageApiProvider: storageApiProvider,
+  );
   runApp(
-      BlocProvider<AuthenticationBloc>(
-          create: (context) {
-            return AuthenticationBloc(authService: authService)
-              ..add(AppStarted());
-          },
-          child: MyApp(authService: authService, userService: userService,)
-      )
+    BlocProvider<AuthenticationBloc>(
+      create: (context) {
+        return AuthenticationBloc(authService: authService)..add(AuthenticationEvent.AppStarted);
+      },
+      child: MyApp(
+        authService: authService,
+        userService: userService,
+      ),
+    ),
   );
 }
-
 
 //Future<void> printData () async {
 //  FlutterSecureStorage storage = FlutterSecureStorage();
